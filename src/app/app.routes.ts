@@ -6,6 +6,7 @@ import { ValeDigital } from './pages/vale-digital/vale-digital';
 import { MiCartera } from './pages/mi-cartera/mi-cartera';
 import { Transferencias } from './pages/transferencias/transferencias';
 import { MisPagos } from './pages/mis-pagos/mis-pagos';
+import { Reclamos } from './pages/reclamos/reclamos';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -16,4 +17,5 @@ export const routes: Routes = [
   { path: 'mi-cartera', component: MiCartera },
   { path: 'transferencias', component: Transferencias },
   { path: 'mis-pagos', component: MisPagos },
+  { path: 'reclamos', component: Reclamos },
 ];

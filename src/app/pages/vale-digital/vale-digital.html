@@ -1,54 +1,52 @@
-<div class="p-4 space-y-6 pb-24">
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Otorgar Vale Digital</h2>
+<div class="p-4 space-y-4 pb-24 font-sans">
+  <div class="flex items-center justify-between mb-2">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Generar Vale</h2>
   </div>
 
   <!-- Search form -->
-  <form class="max-w-md mx-auto">   
-      <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Buscar</label>
-      <div class="relative">
-          <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-              </svg>
-          </div>
-          <input type="search" id="default-search" class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-xl bg-white focus:ring-brand focus:border-brand dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white shadow-sm" placeholder="Buscar por nombre o ID de cliente..." required />
-          <button type="button" class="text-white absolute end-2.5 bottom-2.5 bg-brand hover:bg-brand-strong focus:ring-4 focus:outline-none focus:ring-brand-300 font-medium rounded-lg text-sm px-4 py-2 dark:focus:ring-brand-800">Buscar</button>
-      </div>
-  </form>
+  <app-search-bar placeholder="Buscar por nombre o ID de cliente..."></app-search-bar>
 
   <!-- Client Profile Selected (Simulated) -->
-  <div class="bg-white rounded-xl shadow p-5 border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+  <app-card [noPadding]="false">
     <div class="flex items-center gap-4 mb-4">
-        <img class="w-12 h-12 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="Profile image">
+        <div class="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center text-brand font-bold text-xl">MG</div>
         <div>
             <h3 class="text-lg font-bold text-gray-900 dark:text-white">María González Pérez</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Cliente Activo • ID: 8394</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Cliente Activo • ID: 8394</p>
         </div>
     </div>
     
-    <div class="p-3 bg-brand-50 dark:bg-brand-950 rounded-lg text-brand-900 dark:text-brand-100 mb-4 flex justify-between items-center border border-brand-100 dark:border-brand-800">
-      <span class="text-sm font-medium">Límite disponible:</span>
-      <span class="text-lg font-bold">$4,500.00</span>
+    <div class="p-3 bg-brand-50 rounded-xl text-brand-900 mb-4 flex justify-between items-center border border-brand-100">
+      <span class="text-sm font-bold">Límite total disponible:</span>
+      <span class="text-lg font-black">${{ limiteDisponible | number:'1.2-2' }}</span>
+    </div>
+
+    <!-- Regla 50% Warning -->
+    <div class="p-3 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 font-medium border border-yellow-200" role="alert">
+      <span class="font-bold">Regla del 50%:</span> Al ser primer vale, el monto máximo permitido es ${{ limitePermitido | number:'1.2-2' }}.
     </div>
 
     <!-- Amount Selection -->
-    <label for="amount" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Monto a otorgar</label>
-    <div class="grid grid-cols-3 gap-2 mb-4">
-      <button type="button" class="py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-brand focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">$500</button>
-      <button type="button" class="py-2 px-3 text-sm font-medium text-white focus:outline-none bg-brand rounded-lg border border-brand hover:bg-brand-strong focus:z-10 focus:ring-4 focus:ring-brand-300">$1,000</button>
-      <button type="button" class="py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-brand focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">$2,000</button>
+    <label class="block mb-3 text-sm font-bold text-gray-900 dark:text-white">Monto rápido</label>
+    <div class="grid grid-cols-3 gap-3 mb-5">
+      <app-button variant="outline" size="sm" (onClick)="monto = 500">$500</app-button>
+      <app-button variant="primary" size="sm" (onClick)="monto = 1000">$1,000</app-button>
+      <app-button variant="outline" size="sm" [disabled]="true" title="Supera el 50%">$2,500</app-button>
     </div>
     
-    <div class="relative mb-6">
-      <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-        <span class="text-gray-500 dark:text-gray-400 font-medium">$</span>
-      </div>
-      <input type="number" id="amount" class="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-brand focus:border-brand block w-full ps-8 p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="1000" max="4500" required>
+    <div class="mb-6">
+      <app-input 
+        label="Monto Personalizado" 
+        type="number" 
+        [hasIcon]="true"
+        [(ngModel)]="monto"
+        [error]="monto > limitePermitido ? 'El monto supera el 50% permitido' : ''">
+        <span icon class="font-bold text-gray-500">$</span>
+      </app-input>
     </div>
 
-    <button type="button" class="w-full text-white bg-brand hover:bg-brand-strong focus:ring-4 focus:ring-brand-300 font-bold rounded-lg text-sm px-5 py-3 text-center dark:focus:ring-brand-800 shadow-md transition-transform active:scale-95">
-      Confirmar y Generar Vale
-    </button>
-  </div>
+    <app-button variant="primary" size="lg" [fullWidth]="true" [disabled]="monto > limitePermitido">
+      Generar Folio
+    </app-button>
+  </app-card>
 </div>
