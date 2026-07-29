@@ -1,0 +1,11 @@
+<button
+  [type]="type"
+  [class]="classes"
+  [disabled]="disabled"
+  (click)="handleClick($event)"
+  [style.backgroundColor]="variant === 'primary' && !disabled ? 'var(--color-brand)' : ''"
+  [style.borderColor]="variant === 'outline' ? 'var(--color-brand)' : ''"
+  [style.color]="variant === 'outline' ? 'var(--color-brand)' : ''"
+>
+  <ng-content></ng-content>
+</button>

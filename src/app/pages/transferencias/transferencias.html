@@ -1,57 +1,82 @@
-<div class="p-4 space-y-6 pb-24">
+<div class="p-4 space-y-6 pb-24 font-sans">
   <div class="flex items-center justify-between mb-2">
-    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Trámites y Transferencias</h2>
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Trámites y Transferencias</h2>
   </div>
 
-  <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
-      <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
-          <li class="me-2" role="presentation">
-              <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="inbox-tab" data-tabs-target="#inbox" type="button" role="tab" aria-controls="inbox" aria-selected="false">Solicitudes Recibidas (2)</button>
+  <div class="mb-4 border-b border-gray-200">
+      <ul class="flex flex-wrap -mb-px text-sm font-bold text-center">
+          <li class="me-2 cursor-pointer">
+              <button 
+                class="inline-block p-4 border-b-4 rounded-t-lg transition-colors" 
+                [class.text-brand]="activeTab === 'inbox'"
+                [class.border-brand]="activeTab === 'inbox'"
+                [class.text-gray-500]="activeTab !== 'inbox'"
+                [class.border-transparent]="activeTab !== 'inbox'"
+                [class.hover:text-gray-600]="activeTab !== 'inbox'"
+                [class.hover:border-gray-300]="activeTab !== 'inbox'"
+                (click)="setTab('inbox')">
+                Solicitudes Recibidas (2)
+              </button>
           </li>
-          <li class="me-2" role="presentation">
-              <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="sent-tab" data-tabs-target="#sent" type="button" role="tab" aria-controls="sent" aria-selected="false">Mis Peticiones</button>
+          <li class="me-2 cursor-pointer">
+              <button 
+                class="inline-block p-4 border-b-4 rounded-t-lg transition-colors" 
+                [class.text-brand]="activeTab === 'sent'"
+                [class.border-brand]="activeTab === 'sent'"
+                [class.text-gray-500]="activeTab !== 'sent'"
+                [class.border-transparent]="activeTab !== 'sent'"
+                [class.hover:text-gray-600]="activeTab !== 'sent'"
+                [class.hover:border-gray-300]="activeTab !== 'sent'"
+                (click)="setTab('sent')">
+                Mis Peticiones
+              </button>
           </li>
       </ul>
   </div>
 
-  <div id="default-tab-content">
-      <div class="hidden space-y-4" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">
+  <div>
+      <div *ngIf="activeTab === 'inbox'" class="space-y-4">
           
           <!-- Request Card 1 -->
-          <div class="w-full bg-white border border-gray-200 rounded-xl shadow dark:bg-gray-800 dark:border-gray-700">
-              <div class="p-4">
-                  <div class="flex items-center justify-between mb-2">
-                      <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">De: Dist. Norte (Ana)</span>
-                      <span class="text-xs text-gray-500 dark:text-gray-400">Hace 2 horas</span>
-                  </div>
-                  <h5 class="mb-1 text-lg font-bold tracking-tight text-gray-900 dark:text-white">Transferencia de Roberto Gómez</h5>
-                  <p class="mb-3 font-normal text-sm text-gray-700 dark:text-gray-400">Saldo actual: $0.00. Cliente al corriente. Motivo: Cambio de domicilio.</p>
-                  <div class="flex gap-2">
-                    <button type="button" class="flex-1 text-white bg-brand hover:bg-brand-strong focus:ring-4 focus:ring-brand-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:focus:ring-brand-800">Aceptar</button>
-                    <button type="button" class="flex-1 text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Rechazar</button>
-                  </div>
+          <app-card [noPadding]="false">
+              <div class="flex items-center justify-between mb-3">
+                  <span class="bg-blue-50 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded border border-blue-200">De: Dist. Norte (Ana)</span>
+                  <span class="text-xs text-gray-500 font-medium">Hace 2 horas</span>
               </div>
-          </div>
+              <h5 class="mb-1 text-lg font-bold tracking-tight text-gray-900">Transferencia de Roberto Gómez</h5>
+              <p class="mb-4 font-medium text-sm text-gray-600">Saldo actual: $0.00. Cliente al corriente. Motivo: Cambio de domicilio.</p>
+              <div class="flex gap-3">
+                <div class="flex-1">
+                  <app-button variant="primary" size="md" [fullWidth]="true">Aceptar</app-button>
+                </div>
+                <div class="flex-1">
+                  <app-button variant="outline" size="md" [fullWidth]="true">Rechazar</app-button>
+                </div>
+              </div>
+          </app-card>
 
           <!-- Request Card 2 -->
-          <div class="w-full bg-white border border-gray-200 rounded-xl shadow dark:bg-gray-800 dark:border-gray-700">
-              <div class="p-4">
-                  <div class="flex items-center justify-between mb-2">
-                      <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">De: Dist. Centro (Luis)</span>
-                      <span class="text-xs text-gray-500 dark:text-gray-400">Ayer</span>
-                  </div>
-                  <h5 class="mb-1 text-lg font-bold tracking-tight text-gray-900 dark:text-white">Transferencia de Laura Martínez</h5>
-                  <p class="mb-3 font-normal text-sm text-gray-700 dark:text-gray-400">Saldo actual: <span class="text-red-600 font-bold">$1,200.00</span>. Atraso de 1 quincena.</p>
-                  <div class="flex gap-2">
-                    <button type="button" class="flex-1 text-white bg-brand hover:bg-brand-strong focus:ring-4 focus:ring-brand-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:focus:ring-brand-800">Aceptar</button>
-                    <button type="button" class="flex-1 text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Rechazar</button>
-                  </div>
+          <app-card [noPadding]="false">
+              <div class="flex items-center justify-between mb-3">
+                  <span class="bg-blue-50 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded border border-blue-200">De: Dist. Centro (Luis)</span>
+                  <span class="text-xs text-gray-500 font-medium">Ayer</span>
               </div>
-          </div>
+              <h5 class="mb-1 text-lg font-bold tracking-tight text-gray-900">Transferencia de Laura Martínez</h5>
+              <p class="mb-4 font-medium text-sm text-gray-600">Saldo actual: <span class="text-red-600 font-bold">$1,200.00</span>. Atraso de 1 quincena.</p>
+              <div class="flex gap-3">
+                <div class="flex-1">
+                  <app-button variant="primary" size="md" [fullWidth]="true">Aceptar</app-button>
+                </div>
+                <div class="flex-1">
+                  <app-button variant="outline" size="md" [fullWidth]="true">Rechazar</app-button>
+                </div>
+              </div>
+          </app-card>
 
       </div>
-      <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="sent" role="tabpanel" aria-labelledby="sent-tab">
-          <p class="text-sm text-gray-500 dark:text-gray-400">No has enviado ninguna petición de transferencia de cartera reciente.</p>
+
+      <div *ngIf="activeTab === 'sent'" class="p-4 rounded-xl bg-gray-50 border border-gray-200 text-center">
+          <p class="text-sm font-bold text-gray-500 py-6">No has enviado ninguna petición de transferencia de cartera reciente.</p>
       </div>
   </div>
 </div>

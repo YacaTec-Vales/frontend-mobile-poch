@@ -1,11 +1,13 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CardComponent } from '../../components/ui/card/card';
+import { ButtonComponent } from '../../components/ui/button/button';
 
 declare var ApexCharts: any;
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink],
+  imports: [RouterLink, CardComponent, ButtonComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

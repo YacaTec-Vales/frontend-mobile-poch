@@ -1,0 +1,59 @@
+<div class="p-4 space-y-6 pb-24 font-sans">
+  <div class="flex items-center justify-between mb-2">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Centro de Reclamos</h2>
+  </div>
+
+  <app-card title="Nuevo Reclamo" subtitle="Reporta problemas con pagos, clientes o plataforma">
+    <form class="space-y-5 mt-2">
+      <div>
+        <label class="block mb-2 text-sm font-bold text-gray-900">Tipo de Reclamo</label>
+        <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-brand focus:border-brand block w-full p-3 shadow-sm font-medium">
+          <option>Problema con un cliente</option>
+          <option>Fallo en la aplicación</option>
+          <option>Duda con mi estado de cuenta</option>
+          <option>Otro</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block mb-2 text-sm font-bold text-gray-900">Descripción detallada</label>
+        <textarea rows="4" class="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-brand focus:border-brand shadow-sm font-medium" placeholder="Escribe aquí los detalles del problema..."></textarea>
+      </div>
+
+      <!-- Evidencia Fotográfica -->
+      <div class="pt-2">
+        <label class="block mb-2 text-sm font-bold text-gray-900">Evidencia Fotográfica (Opcional)</label>
+        <div class="flex items-center justify-center w-full">
+            <label for="evidence-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                <div class="flex flex-col items-center justify-center pt-5 pb-6 text-gray-500">
+                    <svg class="w-8 h-8 mb-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                    </svg>
+                    <p class="mb-2 text-sm font-bold"><span class="font-extrabold text-brand">Sube una imagen</span> o tómala</p>
+                    <p class="text-xs">PNG, JPG (Max. 5MB)</p>
+                </div>
+                <input id="evidence-file" type="file" class="hidden" capture="environment" accept="image/*" />
+            </label>
+        </div> 
+      </div>
+
+      <div class="pt-4">
+        <app-button variant="primary" size="lg" [fullWidth]="true">
+          Enviar Reclamo
+        </app-button>
+      </div>
+    </form>
+  </app-card>
+
+  <h3 class="text-lg font-bold text-gray-900 mt-6 mb-4">Mis Reclamos Recientes</h3>
+  
+  <app-card [noPadding]="false">
+      <div class="flex items-center justify-between mb-3">
+          <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2.5 py-0.5 rounded border border-yellow-300">En Revisión</span>
+          <span class="text-xs text-gray-500 font-medium">Hace 1 día</span>
+      </div>
+      <h5 class="mb-1 text-base font-bold text-gray-900">Cliente se niega a pagar</h5>
+      <p class="font-medium text-sm text-gray-600">Folio: #RC-9831. Reporte levantado para iniciar cobranza externa.</p>
+  </app-card>
+
+</div>

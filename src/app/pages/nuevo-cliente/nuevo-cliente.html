@@ -1,21 +1,21 @@
-<div class="p-4 space-y-6 pb-24">
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Nuevo Prevale</h2>
-    <a routerLink="/dashboard" class="text-sm font-medium text-brand hover:underline dark:text-brand-light">Cancelar</a>
+<div class="p-4 space-y-6 pb-24 font-sans">
+  <div class="flex items-center justify-between mb-2">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Nuevo Pre-vale</h2>
+    <a routerLink="/dashboard" class="text-sm font-bold text-brand hover:underline">Cancelar</a>
   </div>
 
   <!-- Stepper -->
-  <ol class="flex items-center w-full text-sm font-medium text-center text-gray-500 dark:text-gray-400 sm:text-base">
-      <li class="flex md:w-full items-center text-brand dark:text-brand-light sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
-          <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
-              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+  <ol class="flex items-center w-full text-sm font-bold text-center text-gray-500 sm:text-base">
+      <li class="flex md:w-full items-center text-brand sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6">
+          <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200">
+              <svg class="w-4 h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
               </svg>
               Personal
           </span>
       </li>
-      <li class="flex md:w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
-          <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
+      <li class="flex md:w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6">
+          <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200">
               <span class="me-2">2</span>
               Fotos
           </span>
@@ -26,38 +26,49 @@
       </li>
   </ol>
 
-  <!-- Form Content (Step 1 Simulado) -->
-  <div class="bg-white rounded-xl shadow p-4 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
-    <form class="space-y-4">
-      <div>
-        <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre Completo</label>
-        <input type="text" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-brand focus:border-brand block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
-      </div>
-      <div>
-        <label for="curp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">CURP (Validador automático)</label>
-        <input type="text" id="curp" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-brand focus:border-brand block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Ej. ABCD12345678901234" required>
-        <p class="mt-1 text-xs text-green-600 dark:text-green-400 hidden" id="curp-success">CURP Válido.</p>
-      </div>
+  <!-- Form Content -->
+  <app-card [noPadding]="false">
+    <form class="space-y-5">
+      
+      <app-input 
+        label="Nombre Completo" 
+        placeholder="Ej. Juan Pérez" 
+        [(ngModel)]="nombre" 
+        name="nombre">
+      </app-input>
+      
+      <app-input 
+        label="CURP (Validador Automático)" 
+        placeholder="Ej. ABCD12345678901234" 
+        [(ngModel)]="curp" 
+        name="curp"
+        [hasIcon]="true">
+        <svg icon class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+        </svg>
+      </app-input>
 
       <!-- Dropzone for INE (Step 2 Preview) -->
-      <div class="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fotografía de INE (Frente y Reverso)</label>
+      <div class="pt-2 border-t border-gray-100">
+        <label class="block mb-2 text-sm font-bold text-gray-900">Fotografía de INE (Frente y Reverso)</label>
         <div class="flex items-center justify-center w-full">
-            <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                    <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+            <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-brand border-dashed rounded-xl cursor-pointer bg-brand-50 hover:bg-brand-100 transition-colors">
+                <div class="flex flex-col items-center justify-center pt-5 pb-6 text-brand">
+                    <svg class="w-8 h-8 mb-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                     </svg>
-                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click para capturar</span> o galería</p>
+                    <p class="mb-2 text-sm font-bold"><span class="font-extrabold">Click para capturar</span> o galería</p>
                 </div>
                 <input id="dropzone-file" type="file" class="hidden" capture="environment" accept="image/*" />
             </label>
         </div> 
       </div>
 
-      <button type="button" class="w-full text-white bg-brand hover:bg-brand-strong focus:ring-4 focus:ring-brand-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-4 text-center dark:focus:ring-brand-800 transition-colors">
-        Siguiente Paso
-      </button>
+      <div class="pt-2">
+        <app-button variant="primary" size="lg" [fullWidth]="true">
+          Siguiente Paso
+        </app-button>
+      </div>
     </form>
-  </div>
+  </app-card>
 </div>
