@@ -1,0 +1,62 @@
+<div class="p-4 pt-6 space-y-6 pb-24">
+  <!-- Alerts -->
+  <div id="alert-additional-content-1" class="p-4 mb-4 text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
+    <div class="flex items-center">
+      <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+      </svg>
+      <span class="sr-only">Info</span>
+      <h3 class="text-lg font-medium tracking-tight">Corte Próximo</h3>
+    </div>
+    <div class="mt-2 mb-4 text-sm font-light">
+      Su fecha de corte es el próximo 15 del mes. Asegúrese de recolectar los pagos de su cartera.
+    </div>
+    <div class="flex gap-2">
+      <button type="button" class="text-white bg-blue-800 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors">
+        Ver detalles
+      </button>
+      <button type="button" class="text-blue-800 bg-transparent border border-blue-800 hover:bg-blue-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-blue-600 dark:border-blue-600 dark:text-blue-400 dark:hover:text-white dark:focus:ring-blue-800 transition-colors" data-dismiss-target="#alert-additional-content-1" aria-label="Close">
+        Descartar
+      </button>
+    </div>
+  </div>
+
+  <!-- Chart Card -->
+  <div class="w-full bg-white rounded-xl shadow dark:bg-gray-800 p-4 md:p-6 border border-gray-100 dark:border-gray-700">
+    <div class="flex justify-between mb-3">
+        <div class="flex justify-center items-center">
+            <h5 class="text-lg font-bold leading-none text-gray-900 dark:text-white pe-1">Estado de Crédito</h5>
+        </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="py-6" id="donut-chart"></div>
+  </div>
+
+  <!-- Quick Actions Panel -->
+  <h5 class="text-lg font-bold text-gray-900 dark:text-white pt-4">Accesos Rápidos</h5>
+  <div class="grid grid-cols-2 gap-4">
+    <a routerLink="/vale-digital" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center gap-3 text-brand hover:bg-gray-50 dark:bg-gray-800 dark:text-brand-light dark:hover:bg-gray-700 transition-colors">
+      <svg class="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="font-medium text-sm text-gray-700 dark:text-gray-300">Dar Vale</span>
+    </a>
+    <a routerLink="/mi-cartera" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center gap-3 text-brand hover:bg-gray-50 dark:bg-gray-800 dark:text-brand-light dark:hover:bg-gray-700 transition-colors">
+      <svg class="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+      </svg>
+      <span class="font-medium text-sm text-gray-700 dark:text-gray-300">Mis Clientes</span>
+    </a>
+  </div>
+
+  <!-- FAB for New Client -->
+  <div class="fixed end-6 bottom-20 group z-50">
+      <button type="button" routerLink="/nuevo-cliente" aria-controls="speed-dial-menu-default" aria-expanded="false" class="flex items-center justify-center text-white bg-brand rounded-full w-14 h-14 hover:bg-brand-strong dark:hover:bg-brand-strong focus:ring-4 focus:ring-brand-300 focus:outline-none shadow-xl transition-transform hover:scale-105 active:scale-95">
+          <svg class="w-6 h-6 transition-transform group-hover:rotate-45" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+          </svg>
+          <span class="sr-only">Nuevo Cliente</span>
+      </button>
+  </div>
+</div>
