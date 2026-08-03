@@ -1,3 +1,9 @@
+## [0.1.0-rc.2](https://github.com/YacaTec-Vales/frontend-mobile-poch/compare/v0.1.0-rc.1...v0.1.0-rc.2) (2026-08-03)
+
+### Bug Fixes
+
+* **ci:** quitar skip ci de los commits de release ([ba1bda4](https://github.com/YacaTec-Vales/frontend-mobile-poch/commit/ba1bda40094af2067b4afd03c2b36bb24cf4f502))
+
 ## [0.1.0-rc.1](https://github.com/YacaTec-Vales/frontend-mobile-poch/compare/v0.0.0...v0.1.0-rc.1) (2026-08-03)
 
 ### Features
