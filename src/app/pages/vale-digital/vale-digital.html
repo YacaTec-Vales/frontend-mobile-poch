@@ -3,92 +3,50 @@
     <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Generar Vale</h2>
   </div>
 
-  <!-- Alertas de Éxito o Error -->
-  @if (errorMessage()) {
-    <div class="p-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200" role="alert">
-      {{ errorMessage() }}
-    </div>
-  }
-  @if (successMessage()) {
-    <div class="p-4 text-sm text-green-800 rounded-lg bg-green-50 border border-green-200" role="alert">
-      {{ successMessage() }}
-    </div>
-  }
+  <!-- Search form -->
+  <app-search-bar placeholder="Buscar por nombre o ID de cliente..."></app-search-bar>
 
-  @if (generatedVoucher()) {
-    <app-card [noPadding]="false" extraClasses="border-green-500 border-2">
-      <div class="text-center mb-4">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-500 mb-4">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+  <!-- Client Profile Selected (Simulated) -->
+  <app-card [noPadding]="false">
+    <div class="flex items-center gap-4 mb-4">
+        <div class="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center text-brand font-bold text-xl">MG</div>
+        <div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">María González Pérez</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Cliente Activo • ID: 8394</p>
         </div>
-        <h3 class="text-xl font-bold text-gray-900">Vale Generado Exitosamente</h3>
-        <p class="text-gray-500 text-sm mt-1">Folio: <span class="font-bold text-gray-900">{{ generatedVoucher()?.folio }}</span></p>
-      </div>
+    </div>
+    
+    <div class="p-3 bg-brand-50 rounded-xl text-brand-900 mb-4 flex justify-between items-center border border-brand-100">
+      <span class="text-sm font-bold">Límite total disponible:</span>
+      <span class="text-lg font-black">${{ limiteDisponible | number:'1.2-2' }}</span>
+    </div>
 
-      <div class="bg-gray-50 rounded-xl p-4 space-y-2 text-sm text-gray-700">
-        <div class="flex justify-between"><span class="font-bold">Monto:</span> <span>{{ (generatedVoucher()!.amountCents / 100) | currency:'MXN' }}</span></div>
-        <div class="flex justify-between"><span class="font-bold">Total a pagar:</span> <span>{{ (generatedVoucher()!.totalToPayCents / 100) | currency:'MXN' }}</span></div>
-        <div class="flex justify-between"><span class="font-bold">Pago por periodo:</span> <span>{{ (generatedVoucher()!.paymentPerPeriodCents / 100) | currency:'MXN' }} x {{ generatedVoucher()!.totalPeriods }}</span></div>
-        <div class="flex justify-between"><span class="font-bold">Tipo:</span> <span>{{ generatedVoucher()!.voucherType }}</span></div>
-      </div>
+    <!-- Regla 50% Warning -->
+    <div class="p-3 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 font-medium border border-yellow-200" role="alert">
+      <span class="font-bold">Regla del 50%:</span> Al ser primer vale, el monto máximo permitido es ${{ limitePermitido | number:'1.2-2' }}.
+    </div>
 
-      <div class="mt-6">
-        <app-button variant="primary" [fullWidth]="true" (onClick)="generatedVoucher.set(null)">Generar otro vale</app-button>
-      </div>
-    </app-card>
-  } @else {
+    <!-- Amount Selection -->
+    <label class="block mb-3 text-sm font-bold text-gray-900 dark:text-white">Monto rápido</label>
+    <div class="grid grid-cols-3 gap-3 mb-5">
+      <app-button variant="outline" size="sm" (onClick)="monto = 500">$500</app-button>
+      <app-button variant="primary" size="sm" (onClick)="monto = 1000">$1,000</app-button>
+      <app-button variant="outline" size="sm" [disabled]="true" title="Supera el 50%">$2,500</app-button>
+    </div>
+    
+    <div class="mb-6">
+      <app-input 
+        label="Monto Personalizado" 
+        type="number" 
+        [hasIcon]="true"
+        [(ngModel)]="monto"
+        [error]="monto > limitePermitido ? 'El monto supera el 50% permitido' : ''">
+        <span icon class="font-bold text-gray-500">$</span>
+      </app-input>
+    </div>
 
-    <!-- Formulario para testing manual -->
-    <app-card [noPadding]="false" title="Datos (Testing API)">
-      <div class="mb-4">
-        <label class="block mb-2 text-sm font-bold text-gray-900 dark:text-white">Seleccionar Cliente</label>
-        <select [(ngModel)]="clientId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-brand focus:border-brand block w-full p-3 font-medium transition-colors" [disabled]="isLoadingClients()">
-          <option value="" disabled selected>Selecciona un cliente de tu cartera</option>
-          @for (client of clients(); track client.id) {
-            <option [value]="client.id">{{ client.fullName }} ({{ client.curp }})</option>
-          }
-        </select>
-      </div>
-      <div class="mb-4">
-        <label class="block mb-2 text-sm font-bold text-gray-900 dark:text-white">Seleccionar Producto (Catálogo)</label>
-        <select [(ngModel)]="productId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-brand focus:border-brand block w-full p-3 font-medium transition-colors" [disabled]="isLoadingProducts()">
-          <option value="" disabled selected>Selecciona un producto financiero</option>
-          @for (product of products(); track product.id) {
-            <option [value]="product.id">Código: {{ product.code }} - {{ (product.costCents / 100) | currency:'MXN' }} ({{ product.totalPeriods }} quincenas)</option>
-          }
-        </select>
-      </div>
-    </app-card>
-
-    <app-card [noPadding]="false">
-      <!-- Regla 50% Warning -->
-      <div class="p-3 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 font-medium border border-yellow-200" role="alert">
-        <span class="font-bold">Atención:</span> Regla R15 (PREVALE) debe ser <= 50% del crédito disponible.
-      </div>
-
-      <!-- Amount Selection -->
-      <label class="block mb-3 text-sm font-bold text-gray-900 dark:text-white">Monto rápido</label>
-      <div class="grid grid-cols-3 gap-3 mb-5">
-        <app-button variant="outline" size="sm" (onClick)="monto = 500">$500</app-button>
-        <app-button variant="primary" size="sm" (onClick)="monto = 1000">$1,000</app-button>
-        <app-button variant="outline" size="sm" (onClick)="monto = 2500">$2,500</app-button>
-      </div>
-      
-      <div class="mb-6">
-        <app-input 
-          label="Monto Personalizado" 
-          type="number" 
-          [hasIcon]="true"
-          [(ngModel)]="monto"
-          [error]="monto % 100 !== 0 ? 'El monto debe ser múltiplo de $100' : ''">
-          <span icon class="font-bold text-gray-500">$</span>
-        </app-input>
-      </div>
-
-      <app-button variant="primary" size="lg" [fullWidth]="true" [disabled]="isLoading() || monto % 100 !== 0" (onClick)="generarFolio()">
-        @if (isLoading()) { Generando... } @else { Generar Folio }
-      </app-button>
-    </app-card>
-  }
+    <app-button variant="primary" size="lg" [fullWidth]="true" [disabled]="monto > limitePermitido">
+      Generar Folio
+    </app-button>
+  </app-card>
 </div>
-

@@ -11,56 +11,54 @@
           <path fill-rule="evenodd" d="M12 2a1 1 0 01.8.4l10 13a1 1 0 01-.8 1.6H2a1 1 0 01-.8-1.6l10-13A1 1 0 0112 2zm0 3.2L3.8 15h16.4L12 5.2zM8 18a1 1 0 011-1h6a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd"/>
         </svg>
       </div>
-      <p class="text-3xl font-mono font-black text-brand tracking-widest relative z-10">{{ referencePayment() }}</p>
+      <p class="text-3xl font-mono font-black text-brand tracking-widest relative z-10">4098 1234 5678</p>
       <p class="text-xs text-gray-500 mt-2 font-bold uppercase tracking-wider">BBVA Bancomer</p>
     </div>
   </app-card>
 
-  
+  <!-- Upload Ticket / Conciliation -->
+  <app-card title="Aclaración Manual de Pagos" subtitle="Si tu pago no se reflejó, sube tu comprobante.">
+      <div class="flex items-center justify-center w-full mb-4 mt-2">
+          <label for="ticket-file" class="flex flex-col items-center justify-center w-full h-24 border-2 border-brand border-dashed rounded-xl cursor-pointer bg-brand-50 hover:bg-brand-100 transition-colors">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                  <svg class="w-6 h-6 mb-2 text-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                  </svg>
+                  <p class="text-xs text-brand font-bold">Subir foto del Ticket</p>
+              </div>
+              <input id="ticket-file" type="file" class="hidden" capture="environment" accept="image/*" />
+          </label>
+      </div> 
+      <app-button variant="primary" size="md" [fullWidth]="true">
+        Enviar para revisión
+      </app-button>
+  </app-card>
 
   <!-- Timeline of Account Statements -->
-    <h3 class="text-lg font-bold text-gray-900 mt-6 mb-4">Relaciones</h3>
-  <ol class="relative border-s border-gray-200 ms-3">
-    @if (isLoading()) {
-      <li class="mb-8 ms-6">
-        <p class="text-sm text-gray-500">Cargando relaciones...</p>
+  <h3 class="text-lg font-bold text-gray-900 mt-6 mb-4">Relaciones Anteriores</h3>
+  <ol class="relative border-s border-gray-200 ms-3">                  
+      <li class="mb-8 ms-6">            
+          <span class="absolute flex items-center justify-center w-6 h-6 bg-brand-100 rounded-full -start-3 ring-8 ring-white">
+              <svg class="w-3 h-3 text-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+              </svg>
+          </span>
+          <h3 class="flex items-center mb-1 text-base font-bold text-gray-900">Quincena Actual <span class="bg-brand-50 text-brand text-xs font-bold px-2 py-0.5 rounded border border-brand-200 ms-3">Pendiente</span></h3>
+          <time class="block mb-2 text-xs font-medium text-gray-500">Corte: 15 de Noviembre</time>
+          <p class="mb-3 text-sm font-medium text-gray-600">Total a pagar: <strong class="text-gray-900 text-lg font-bold">$14,500.00</strong></p>
+          <app-button variant="outline" size="sm">
+            Descargar PDF
+          </app-button>
       </li>
-    } @else if (relations().length === 0) {
       <li class="mb-8 ms-6">
-        <p class="text-sm text-gray-500">No hay relaciones anteriores.</p>
+          <span class="absolute flex items-center justify-center w-6 h-6 bg-gray-100 rounded-full -start-3 ring-8 ring-white">
+              <svg class="w-3 h-3 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+              </svg>
+          </span>
+          <h3 class="mb-1 text-base font-bold text-gray-900">Relación Anterior <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded border border-green-300 ms-3">Liquidado</span></h3>
+          <time class="block mb-2 text-xs font-medium text-gray-500">Corte: 31 de Octubre</time>
+          <p class="text-sm font-medium text-gray-600">Total pagado: $12,300.00</p>
       </li>
-    } @else {
-      @for (rel of relations(); track rel.id) {
-        <li class="mb-8 ms-6">
-            <span class="absolute flex items-center justify-center w-6 h-6 rounded-full -start-3 ring-8 ring-white"
-                  [ngClass]="rel.reconciliationStatus === 'LIQUIDADO' ? 'bg-green-100' : 'bg-brand-100'">
-                @if (rel.reconciliationStatus === 'LIQUIDADO') {
-                  <svg class="w-3 h-3 text-green-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"/>
-                  </svg>
-                } @else {
-                  <svg class="w-3 h-3 text-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                  </svg>
-                }
-            </span>
-            <h3 class="flex items-center mb-1 text-base font-bold text-gray-900">
-              Relación
-              @if (rel.reconciliationStatus === 'LIQUIDADO') {
-                <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded border border-green-300 ms-3">Liquidado</span>
-              } @else {
-                <span class="bg-brand-50 text-brand text-xs font-bold px-2 py-0.5 rounded border border-brand-200 ms-3">{{ rel.reconciliationStatus }}</span>
-              }
-            </h3>
-            <time class="block mb-2 text-xs font-medium text-gray-500">Corte: {{ rel.cutDate | date:'mediumDate' }}</time>
-            @if (rel.reconciliationStatus === 'LIQUIDADO') {
-              <p class="text-sm font-medium text-gray-600">Total pagado: <strong class="text-gray-900 text-lg font-bold">{{ (rel.totalPaidCents / 100) | currency }}</strong></p>
-            } @else {
-              <p class="mb-3 text-sm font-medium text-gray-600">Total a pagar: <strong class="text-gray-900 text-lg font-bold">{{ (rel.totalToPayCents / 100) | currency }}</strong></p>
-              <!-- <app-button variant="outline" size="sm">Descargar PDF</app-button> -->
-            }
-        </li>
-      }
-    }
   </ol>
 </div>
