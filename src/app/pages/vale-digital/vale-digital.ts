@@ -1,20 +1,102 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CardComponent } from '../../components/ui/card/card';
-import { SearchBarComponent } from '../../components/ui/search-bar/search-bar';
 import { ButtonComponent } from '../../components/ui/button/button';
 import { InputComponent } from '../../components/ui/input/input';
+import { VoucherService } from '../../core/services/voucher.service';
+import { ClientService } from '../../core/services/client.service';
+import { ProductService } from '../../core/services/product.service';
+import type { CreateVoucherDto, VoucherResponse } from '../../core/types/voucher.types';
+import type { ApiErrorResponse } from '../../core/types/api-response.types';
+import type { Client } from '../../core/types/client.types';
+import type { Product } from '../../core/types/product.types';
 
 @Component({
   selector: 'app-vale-digital',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardComponent, SearchBarComponent, ButtonComponent, InputComponent],
+  imports: [CommonModule, FormsModule, CurrencyPipe, CardComponent, ButtonComponent, InputComponent],
   templateUrl: './vale-digital.html',
   styleUrl: './vale-digital.css',
 })
-export class ValeDigital {
+export class ValeDigital implements OnInit {
+  private readonly voucherService = inject(VoucherService);
+  private readonly clientService = inject(ClientService);
+  private readonly productService = inject(ProductService);
+
+  readonly clients = signal<Client[]>([]);
+  readonly isLoadingClients = signal(true);
+
+  readonly products = signal<Product[]>([]);
+  readonly isLoadingProducts = signal(true);
+
+  clientId = '';
+  productId = '';
   monto: number = 1000;
-  limiteDisponible: number = 4500;
-  limitePermitido: number = 2250; 
+
+  readonly isLoading = signal(false);
+  readonly errorMessage = signal('');
+  readonly successMessage = signal('');
+  readonly generatedVoucher = signal<VoucherResponse | null>(null);
+
+  ngOnInit() {
+    this.clientService.getMyClients({ limit: 100 }).subscribe({
+      next: (res) => {
+        this.clients.set(res.data.data || []);
+        this.isLoadingClients.set(false);
+      },
+      error: () => {
+        this.isLoadingClients.set(false);
+      }
+    });
+
+    this.productService.getProducts().subscribe({
+      next: (res) => {
+        this.products.set(res.data || []);
+        this.isLoadingProducts.set(false);
+      },
+      error: () => {
+        this.isLoadingProducts.set(false);
+      }
+    });
+  }
+
+  generarFolio() {
+    this.errorMessage.set('');
+    this.successMessage.set('');
+    this.generatedVoucher.set(null);
+
+    if (!this.clientId || !this.productId) {
+      this.errorMessage.set('Por favor ingresa el ID del Cliente y el ID del Producto para probar.');
+      return;
+    }
+
+    if (this.monto < 100) { 
+       this.errorMessage.set('El monto debe ser mínimo $100.');
+       return;
+    }
+
+    this.isLoading.set(true);
+
+    const dto: CreateVoucherDto = {
+      clientId: this.clientId.trim(),
+      productId: this.productId.trim(),
+      // El backend espera centavos
+      amountCents: this.monto * 100
+    };
+
+    this.voucherService.create(dto).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        this.successMessage.set(res.message);
+        this.generatedVoucher.set(res.data);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isLoading.set(false);
+        const body = err.error as ApiErrorResponse | undefined;
+        this.errorMessage.set(body?.message || 'Ocurrió un error al generar el vale.');
+      }
+    });
+  }
 }

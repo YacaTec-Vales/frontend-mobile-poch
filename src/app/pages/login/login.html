@@ -18,28 +18,56 @@
                 <h2 class="text-xl font-bold mt-2 text-gray-900">Panel de control Distribuidora</h2>
             </div>
 
+            <!-- Error Message -->
+            @if (errorMessage()) {
+                <div class="flex items-center gap-3 p-4 text-sm text-red-800 rounded-xl bg-red-50 border border-red-200 animate-[fadeIn_0.3s_ease-out]"
+                     role="alert" id="login-error-alert">
+                    <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>{{ errorMessage() }}</span>
+                </div>
+            }
+
             <!-- Form -->
             <form class="space-y-6" (submit)="onSubmit($event)">
                 <div>
-                    <label for="email" class="block mb-2 text-sm font-extrabold text-gray-900">Email</label>
-                    <input type="email" name="email" id="email" [(ngModel)]="email"
+                    <label for="usernameOrEmail" class="block mb-2 text-sm font-extrabold text-gray-900">Usuario o Email</label>
+                    <input type="text" name="usernameOrEmail" id="usernameOrEmail" [(ngModel)]="usernameOrEmail"
                         class="bg-gray-200 border-0 text-gray-900 text-lg rounded-xl focus:ring-4 focus:ring-brand-300 block w-full p-4 font-semibold transition-all"
-                        placeholder="distribuidora@empresa.com" required>
+                        placeholder="usuario o correo@empresa.com" required [disabled]="isLoading()">
                 </div>
                 <div>
                     <label for="password" class="block mb-2 text-sm font-extrabold text-gray-900">Contraseña</label>
-                    <input type="password" name="password" id="password"
+                    <input type="password" name="password" id="password" [(ngModel)]="password"
                         class="bg-gray-200 border-0 text-gray-900 text-lg rounded-xl focus:ring-4 focus:ring-brand-300 block w-full p-4 font-semibold transition-all"
-                        placeholder="••••••••" required>
+                        placeholder="••••••••" required [disabled]="isLoading()">
                 </div>
 
-                <button type="submit"
-                    class="w-full text-white font-bold rounded-xl text-xl px-5 py-4 mt-4 text-center shadow-lg hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200"
-                    style="background-color: var(--color-brand);">
-                    Iniciar Sesión
+                <!-- Remember Me -->
+                <div class="flex items-center">
+                    <input type="checkbox" name="rememberMe" id="rememberMe" [(ngModel)]="rememberMe"
+                        class="w-4 h-4 text-brand bg-gray-200 border-0 rounded focus:ring-brand-300 focus:ring-2 transition-all"
+                        [disabled]="isLoading()">
+                    <label for="rememberMe" class="ml-2 text-sm font-medium text-gray-700">Recordarme</label>
+                </div>
+
+                <button type="submit" id="login-submit-btn"
+                    class="w-full text-white font-bold rounded-xl text-xl px-5 py-4 mt-4 text-center shadow-lg hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-3"
+                    style="background-color: var(--color-brand);"
+                    [disabled]="isLoading()">
+                    @if (isLoading()) {
+                        <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        Iniciando sesión...
+                    } @else {
+                        Iniciar Sesión
+                    }
                 </button>
             </form>
 
         </div>
     </div>
-</section>
+</section>
