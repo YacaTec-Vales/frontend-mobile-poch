@@ -6,3 +6,4 @@ export const environment = {
   // Si queda vacía, el interceptor no adjunta x-recaptcha-token.
   recaptchaSiteKey: '',
 };
+
