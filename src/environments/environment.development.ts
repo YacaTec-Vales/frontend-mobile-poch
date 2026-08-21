@@ -1,8 +1,9 @@
 export const environment = {
   production: false,
-  // Dev: usa el proxy de Angular (proxy.conf.json) que redirige /api/*
-  // al backend de staging en infra (api.taquizaschavez.com.mx) o al backend
-  // dev en casa (utete.ddns.net:45000) segun el proxy.conf.json del proyecto.
-  apiUrl: '/api/v1'
+  apiUrl: 'https://api.taquizaschavez.com.mx',
+  // Vacía = captcha apagado en local. Pegar aquí la site key (o la
+  // clave de prueba de Google) para probar contra un backend con
+  // RECAPTCHA_ENABLED=true.
+  recaptchaSiteKey: '',
 };
 
