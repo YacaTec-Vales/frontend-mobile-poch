@@ -15,6 +15,14 @@ export interface CreateClientDto {
   bankAccount?: {
     clabe: string;
   };
+  /**
+   * UUID del documento del INE en `app.document`. Se sube primero via
+   * `POST /uploads` con `documentType='ine'` y se manda el `id` aqui.
+   * El backend valida que exista y lo persiste en `client.ine_document_id`.
+   */
+  ineDocumentId?: string;
+  /** UUID del comprobante de domicilio (misma dinamica que `ineDocumentId`). */
+  addressProofDocumentId?: string;
 }
 
 export interface TransferClientDto {
