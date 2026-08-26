@@ -10,6 +10,7 @@ import { Reclamos } from './pages/reclamos/reclamos';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
+  { path: 'configurar-mfa', loadComponent: () => import('./pages/mfa-setup/mfa-setup').then((m) => m.MfaSetup), canActivate: [authGuard] },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: Login },
   { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
@@ -20,4 +21,3 @@ export const routes: Routes = [
   { path: 'mis-pagos', component: MisPagos, canActivate: [authGuard] },
   { path: 'reclamos', component: Reclamos, canActivate: [authGuard] },
 ];
-

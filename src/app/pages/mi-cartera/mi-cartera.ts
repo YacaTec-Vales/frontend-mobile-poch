@@ -4,11 +4,12 @@ import { SearchBarComponent } from '../../components/ui/search-bar/search-bar';
 import { CardComponent } from '../../components/ui/card/card';
 import { ClientService } from '../../core/services/client.service';
 import type { Client } from '../../core/types/client.types';
+import { ClientDetailModal } from './components/client-detail-modal/client-detail-modal';
 
 @Component({
   selector: 'app-mi-cartera',
   standalone: true,
-  imports: [CommonModule, SearchBarComponent, CardComponent, CurrencyPipe],
+  imports: [CommonModule, SearchBarComponent, CardComponent, CurrencyPipe, ClientDetailModal],
   templateUrl: './mi-cartera.html',
   styleUrl: './mi-cartera.css',
 })
@@ -19,6 +20,7 @@ export class MiCartera implements OnInit {
   readonly isLoading = signal(true);
   readonly errorMessage = signal('');
   
+  selectedClientId = signal<string | null>(null);
   searchTerm = signal('');
 
   readonly filteredClients = computed(() => {
@@ -40,7 +42,18 @@ export class MiCartera implements OnInit {
 
     this.clientService.getMyClients({ limit: 100 }).subscribe({
       next: (res) => {
-        this.clients.set(res.data.data || []);
+        const clientsWithDebt = (res.data.data || []).map(c => {
+          let calculatedDebt = 0;
+          if (c.vouchers && c.vouchers.length > 0) {
+            calculatedDebt = c.vouchers.reduce((sum, v) => {
+              // Calculamos el adeudo independientemente del estado para que coincida con el modal por ahora
+              const debt = v.totalToPayCents - (v.paidPeriods * v.paymentPerPeriodCents);
+              return sum + (debt > 0 ? debt : 0);
+            }, 0);
+          }
+          return { ...c, outstandingCents: calculatedDebt > 0 ? calculatedDebt : c.outstandingCents };
+        });
+        this.clients.set(clientsWithDebt);
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -56,5 +69,9 @@ export class MiCartera implements OnInit {
 
   getInitials(name: string, lastName: string): string {
     return `${name.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  }
+
+  openClientDetail(id: string) {
+    this.selectedClientId.set(id);
   }
 }

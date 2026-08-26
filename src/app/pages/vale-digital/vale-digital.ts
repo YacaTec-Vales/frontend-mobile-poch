@@ -33,8 +33,7 @@ export class ValeDigital implements OnInit {
 
   clientId = '';
   productId = '';
-  monto: number = 1000;
-
+  
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
@@ -72,19 +71,21 @@ export class ValeDigital implements OnInit {
       return;
     }
 
-    if (this.monto < 100) { 
-       this.errorMessage.set('El monto debe ser mínimo $100.');
-       return;
+    
+    
+    const selectedProduct = this.products().find(p => p.id === this.productId);
+    if (!selectedProduct) {
+      this.errorMessage.set('El producto seleccionado no es válido.');
+      return;
     }
 
     this.isLoading.set(true);
 
     const dto: CreateVoucherDto = {
       clientId: this.clientId.trim(),
-      productId: this.productId.trim(),
-      // El backend espera centavos
-      amountCents: this.monto * 100
+      productId: this.productId.trim()
     };
+
 
     this.voucherService.create(dto).subscribe({
       next: (res) => {

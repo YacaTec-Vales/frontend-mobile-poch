@@ -55,7 +55,8 @@ export class NuevoCliente implements OnInit {
 
   // Paso 3: Vale
   productId = '';
-  monto: number = 1000;
+  clabe = '';
+  banco = '';
   readonly products = signal<Product[]>([]);
   readonly isLoadingProducts = signal(true);
 
@@ -74,10 +75,34 @@ export class NuevoCliente implements OnInit {
   }
 
   setStep(step: number) {
-    // Si queremos regresar, siempre está permitido
     if (step < this.currentStep) {
       this.currentStep = step;
     }
+  }
+
+  // Métodos de sanitización
+  sanitizeName(field: 'firstName' | 'lastNamePaternal' | 'lastNameMaternal', value: string) {
+    let sanitized = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+    sanitized = sanitized.replace(/\s+/g, ' ').slice(0, 100);
+    this[field] = sanitized;
+  }
+
+  sanitizeCurp(value: string) {
+    this.curp = value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 18);
+  }
+
+  sanitizeRfc(value: string) {
+    this.rfc = value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 13);
+  }
+
+  sanitizePostalCode(value: string) {
+    this.postalCode = value.replace(/[^0-9]/g, '').slice(0, 5);
+  }
+
+  sanitizeText(field: 'street' | 'colonia' | 'city' | 'state' | 'streetNumber', value: string, maxLength: number) {
+    let sanitized = value.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]/g, '');
+    sanitized = sanitized.replace(/\s+/g, ' ').slice(0, maxLength);
+    this[field] = sanitized;
   }
 
   nextStep() {
@@ -85,6 +110,18 @@ export class NuevoCliente implements OnInit {
     if (this.currentStep === 1) {
       if (!this.firstName || !this.lastNamePaternal || !this.lastNameMaternal || !this.curp || !this.birthDate) {
         this.errorMessage.set('Completa los campos requeridos (Nombre, Apellidos, CURP, Fecha).');
+        return;
+      }
+      if (this.curp.length !== 18) {
+        this.errorMessage.set('La CURP debe tener exactamente 18 caracteres alfanuméricos.');
+        return;
+      }
+      if (this.rfc && (this.rfc.length < 10 || this.rfc.length > 13)) {
+        this.errorMessage.set('El RFC debe tener entre 10 y 13 caracteres alfanuméricos.');
+        return;
+      }
+      if (this.postalCode && this.postalCode.length !== 5) {
+        this.errorMessage.set('El Código Postal debe tener exactamente 5 dígitos.');
         return;
       }
     }
@@ -112,11 +149,17 @@ export class NuevoCliente implements OnInit {
       this.errorMessage.set('Selecciona un producto para el prevale.');
       return;
     }
-    if (this.monto < 100) {
-      this.errorMessage.set('El monto debe ser mínimo $100.');
+
+    if (!this.banco || !this.clabe) {
+      this.errorMessage.set('Completa los datos bancarios (Banco y CLABE).');
       return;
     }
 
+    if (this.clabe.length !== 18) {
+      this.errorMessage.set('La CLABE debe tener exactamente 18 dígitos.');
+      return;
+    }
+    
     this.isLoading.set(true);
     this.successMessage.set('Registrando cliente...');
 
@@ -133,6 +176,10 @@ export class NuevoCliente implements OnInit {
       postalCode: this.postalCode.trim() || undefined,
       state: this.state.trim() || undefined,
       city: this.city.trim() || undefined,
+      bankAccount: {
+        clabe: this.clabe.trim(),
+        banco: this.banco.trim()
+      }
     };
 
     this.clientService.createClient(clientDto).subscribe({
@@ -152,8 +199,7 @@ export class NuevoCliente implements OnInit {
           this.successMessage.set('Generando prevale...');
           this.voucherService.create({
             clientId: clientId,
-            productId: this.productId,
-            amountCents: this.monto * 100
+            productId: this.productId
           }).subscribe({
             next: (voucherRes) => {
               this.isLoading.set(false);

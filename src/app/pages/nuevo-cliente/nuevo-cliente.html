@@ -47,32 +47,32 @@
         <div class="space-y-4 animate-fade-in">
           <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Datos Personales</h3>
           
-          <app-input label="Nombre(s)" placeholder="Ej. Ana María" [(ngModel)]="firstName" name="firstName"></app-input>
-          <app-input label="Apellido Paterno" placeholder="Ej. López" [(ngModel)]="lastNamePaternal" name="lastNamePaternal"></app-input>
-          <app-input label="Apellido Materno" placeholder="Ej. Hernández" [(ngModel)]="lastNameMaternal" name="lastNameMaternal"></app-input>
+          <app-input label="Nombre(s)" placeholder="Ej. Ana María" [(ngModel)]="firstName" name="firstName" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
+          <app-input label="Apellido Paterno" placeholder="Ej. López" [(ngModel)]="lastNamePaternal" name="lastNamePaternal" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
+          <app-input label="Apellido Materno" placeholder="Ej. Hernández" [(ngModel)]="lastNameMaternal" name="lastNameMaternal" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
           
-          <app-input label="CURP" placeholder="18 caracteres" [(ngModel)]="curp" name="curp" [hasIcon]="true">
+          <app-input label="CURP" placeholder="18 caracteres alfanuméricos" [(ngModel)]="curp" name="curp" [hasIcon]="true" filterRegex="[^a-zA-Z0-9]" [uppercase]="true" [maxLength]="18">
             <svg icon class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
             </svg>
           </app-input>
 
           <app-input label="Fecha de Nacimiento" type="date" [(ngModel)]="birthDate" name="birthDate"></app-input>
-          <app-input label="RFC (Opcional)" placeholder="13 caracteres" [(ngModel)]="rfc" name="rfc"></app-input>
+          <app-input label="RFC (Opcional)" placeholder="13 caracteres alfanuméricos" [(ngModel)]="rfc" name="rfc" filterRegex="[^a-zA-Z0-9]" [uppercase]="true" [maxLength]="13"></app-input>
         </div>
 
         <div class="space-y-4 pt-4 animate-fade-in">
           <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Dirección (Opcional)</h3>
           
-          <app-input label="Calle" placeholder="Ej. Av. Hidalgo" [(ngModel)]="street" name="street"></app-input>
+          <app-input label="Calle" placeholder="Ej. Av. Hidalgo" [(ngModel)]="street" name="street" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="200"></app-input>
           <div class="flex gap-4">
-            <div class="flex-1"><app-input label="Número" placeholder="Ej. 123" [(ngModel)]="streetNumber" name="streetNumber"></app-input></div>
-            <div class="flex-1"><app-input label="C.P." placeholder="Ej. 27000" [(ngModel)]="postalCode" name="postalCode"></app-input></div>
+            <div class="flex-1"><app-input label="Número" placeholder="Ej. 123" [(ngModel)]="streetNumber" name="streetNumber" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="50"></app-input></div>
+            <div class="flex-1"><app-input label="C.P." placeholder="Ej. 27000" [(ngModel)]="postalCode" name="postalCode" filterRegex="[^0-9]" [maxLength]="5"></app-input></div>
           </div>
-          <app-input label="Colonia" placeholder="Ej. Centro" [(ngModel)]="colonia" name="colonia"></app-input>
+          <app-input label="Colonia" placeholder="Ej. Centro" [(ngModel)]="colonia" name="colonia" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="200"></app-input>
           <div class="flex gap-4">
-            <div class="flex-1"><app-input label="Ciudad" placeholder="Ej. Torreón" [(ngModel)]="city" name="city"></app-input></div>
-            <div class="flex-1"><app-input label="Estado" placeholder="Ej. Coahuila" [(ngModel)]="state" name="state"></app-input></div>
+            <div class="flex-1"><app-input label="Ciudad" placeholder="Ej. Torreón" [(ngModel)]="city" name="city" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input></div>
+            <div class="flex-1"><app-input label="Estado" placeholder="Ej. Coahuila" [(ngModel)]="state" name="state" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input></div>
           </div>
         </div>
       }
@@ -106,18 +106,15 @@
               }
             </select>
           </div>
+          <h4 class="text-md font-bold text-gray-800 border-b pb-2 mt-4 mb-4">Datos Bancarios</h4>
+          <app-input label="Banco" placeholder="Ej. BBVA" [(ngModel)]="banco" name="banco" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
+          <app-input label="CLABE Interbancaria" placeholder="18 digitos" [(ngModel)]="clabe" name="clabe" filterRegex="[^0-9]" [maxLength]="18"></app-input>
 
-          <label class="block mb-3 text-sm font-bold text-gray-900 dark:text-white">Monto rápido</label>
-          <div class="grid grid-cols-3 gap-3 mb-5">
-            <app-button variant="outline" size="sm" (onClick)="monto = 500">$500</app-button>
-            <app-button variant="primary" size="sm" (onClick)="monto = 1000">$1,000</app-button>
-            <app-button variant="outline" size="sm" (onClick)="monto = 2500">$2,500</app-button>
-          </div>
+
+          
           
           <div class="mb-6">
-            <app-input label="Monto Personalizado" type="number" [hasIcon]="true" [(ngModel)]="monto" [error]="monto % 100 !== 0 ? 'El monto debe ser múltiplo de $100' : ''">
-              <span icon class="font-bold text-gray-500">$</span>
-            </app-input>
+            
           </div>
         </div>
       }
@@ -134,7 +131,7 @@
           @if (currentStep < 3) {
             <app-button variant="primary" size="lg" [fullWidth]="true" (onClick)="nextStep()">Siguiente</app-button>
           } @else {
-            <app-button variant="primary" size="lg" [fullWidth]="true" [disabled]="isLoading() || monto % 100 !== 0 || !productId" (onClick)="finalizarRegistro()">
+            <app-button variant="primary" size="lg" [fullWidth]="true" [disabled]="isLoading() || !productId" (onClick)="finalizarRegistro()">
               @if(isLoading()) { Registrando... } @else { Finalizar y Crear }
             </app-button>
           }

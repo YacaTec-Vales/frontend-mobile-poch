@@ -24,14 +24,6 @@ export class Dashboard implements OnInit {
   readonly isLoading = signal(true);
   readonly errorMessage = signal('');
   
-  // Aumento de crédito
-  isIncreaseFormVisible = signal(false);
-  increaseAmount = 0;
-  increaseReason = '';
-  readonly isIncreasing = signal(false);
-  readonly increaseError = signal('');
-  readonly increaseSuccess = signal('');
-
   private chart: any;
 
   ngOnInit() {
@@ -44,50 +36,6 @@ export class Dashboard implements OnInit {
       error: (err) => {
         this.errorMessage.set('No se pudo cargar la información.');
         this.isLoading.set(false);
-      }
-    });
-  }
-
-  solicitarAumento() {
-    this.increaseError.set('');
-    this.increaseSuccess.set('');
-    
-    if (this.increaseAmount <= 0) {
-      this.increaseError.set('Ingresa un monto válido mayor a 0');
-      return;
-    }
-    if (!this.increaseReason.trim()) {
-      this.increaseError.set('El motivo es obligatorio');
-      return;
-    }
-
-    const currentStatus = this.status();
-    if (!currentStatus) return;
-
-    this.isIncreasing.set(true);
-
-    const dto = {
-      montoCentavos: this.increaseAmount * 100,
-      motivo: this.increaseReason.trim()
-    };
-
-    this.distribuidorService.requestCreditRaise(currentStatus.id, dto).subscribe({
-      next: (res) => {
-        this.isIncreasing.set(false);
-        // Ahora res.data es de tipo CreditRaiseRequest, que representa la solicitud pendiente
-        // Por lo tanto, no actualizamos la gráfica ni el estatus porque el crédito aún no aumenta.
-        this.increaseSuccess.set(res.message);
-        
-        this.increaseAmount = 0;
-        this.increaseReason = '';
-        setTimeout(() => {
-          this.isIncreaseFormVisible.set(false);
-          this.increaseSuccess.set('');
-        }, 3000);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.isIncreasing.set(false);
-        this.increaseError.set(err.error?.message || 'Error al solicitar el aumento');
       }
     });
   }

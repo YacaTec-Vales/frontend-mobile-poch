@@ -26,6 +26,7 @@
         
         @for (client of filteredClients(); track client.id) {
           <li class="p-4 hover:bg-gray-50 transition-colors cursor-pointer" 
+              (click)="openClientDetail(client.id)"
               [ngClass]="{'bg-red-50 hover:bg-red-100': client.status === 'BLOQUEADO' || client.status === 'MOROSO'}">
             <div class="flex items-center space-x-4">
                 <div class="flex-shrink-0 relative">
@@ -68,3 +69,10 @@
     </app-card>
   }
 </div>
+
+@if (selectedClientId()) {
+  <app-client-detail-modal 
+    [clientId]="selectedClientId()!" 
+    (close)="selectedClientId.set(null)">
+  </app-client-detail-modal>
+}

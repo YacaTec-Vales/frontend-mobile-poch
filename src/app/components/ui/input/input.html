@@ -13,6 +13,7 @@
       [id]="id"
       [disabled]="disabled"
       [value]="value"
+      [attr.maxlength]="maxLength || null"
       (input)="onInput($event)"
       (blur)="onTouched()"
       [placeholder]="placeholder"

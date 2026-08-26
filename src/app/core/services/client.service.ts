@@ -24,6 +24,10 @@ export class ClientService {
     return this.http.get<ApiSuccessResponse<PaginatedClients>>(this.baseUrl, { params: httpParams });
   }
 
+  getClientById(id: string): Observable<ApiSuccessResponse<Client>> {
+    return this.http.get<ApiSuccessResponse<Client>>(`${this.baseUrl}/${id}`);
+  }
+
   transferDistributor(clientId: string, dto: TransferClientDto): Observable<ApiSuccessResponse<ClientTransferResponse>> {
     // El backend ahora recibe el clientId dentro del body y la URL ya no lo lleva en el path
     const payload = {

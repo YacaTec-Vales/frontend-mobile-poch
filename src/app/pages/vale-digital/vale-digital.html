@@ -66,26 +66,9 @@
         <span class="font-bold">Atención:</span> Regla R15 (PREVALE) debe ser <= 50% del crédito disponible.
       </div>
 
-      <!-- Amount Selection -->
-      <label class="block mb-3 text-sm font-bold text-gray-900 dark:text-white">Monto rápido</label>
-      <div class="grid grid-cols-3 gap-3 mb-5">
-        <app-button variant="outline" size="sm" (onClick)="monto = 500">$500</app-button>
-        <app-button variant="primary" size="sm" (onClick)="monto = 1000">$1,000</app-button>
-        <app-button variant="outline" size="sm" (onClick)="monto = 2500">$2,500</app-button>
-      </div>
       
-      <div class="mb-6">
-        <app-input 
-          label="Monto Personalizado" 
-          type="number" 
-          [hasIcon]="true"
-          [(ngModel)]="monto"
-          [error]="monto % 100 !== 0 ? 'El monto debe ser múltiplo de $100' : ''">
-          <span icon class="font-bold text-gray-500">$</span>
-        </app-input>
-      </div>
 
-      <app-button variant="primary" size="lg" [fullWidth]="true" [disabled]="isLoading() || monto % 100 !== 0" (onClick)="generarFolio()">
+      <app-button variant="primary" size="lg" [fullWidth]="true" [disabled]="isLoading() || !clientId || !productId" (onClick)="generarFolio()">
         @if (isLoading()) { Generando... } @else { Generar Folio }
       </app-button>
     </app-card>

@@ -31,7 +31,7 @@
       </li>
     } @else {
       @for (rel of relations(); track rel.id) {
-        <li class="mb-8 ms-6">
+        <li class="mb-8 ms-6 cursor-pointer hover:bg-gray-50 p-3 -ms-9 ps-9 rounded-xl transition-colors" (click)="openRelationDetail(rel.id)">
             <span class="absolute flex items-center justify-center w-6 h-6 rounded-full -start-3 ring-8 ring-white"
                   [ngClass]="rel.reconciliationStatus === 'LIQUIDADO' ? 'bg-green-100' : 'bg-brand-100'">
                 @if (rel.reconciliationStatus === 'LIQUIDADO') {
@@ -53,14 +53,16 @@
               }
             </h3>
             <time class="block mb-2 text-xs font-medium text-gray-500">Corte: {{ rel.cutDate | date:'mediumDate' }}</time>
-            @if (rel.reconciliationStatus === 'LIQUIDADO') {
-              <p class="text-sm font-medium text-gray-600">Total pagado: <strong class="text-gray-900 text-lg font-bold">{{ (rel.totalPaidCents / 100) | currency }}</strong></p>
-            } @else {
-              <p class="mb-3 text-sm font-medium text-gray-600">Total a pagar: <strong class="text-gray-900 text-lg font-bold">{{ (rel.totalToPayCents / 100) | currency }}</strong></p>
-              <!-- <app-button variant="outline" size="sm">Descargar PDF</app-button> -->
-            }
+            <p class="mb-3 text-sm font-medium text-gray-600">Adeudo restante: <strong class="text-gray-900 text-lg font-bold" [ngClass]="rel.remainingCents > 0 ? 'text-red-700' : 'text-green-700'">{{ (rel.remainingCents / 100) | currency }}</strong></p>
         </li>
       }
     }
   </ol>
 </div>
+
+@if (selectedRelationId()) {
+  <app-relation-detail-modal 
+    [relationId]="selectedRelationId()!" 
+    (close)="selectedRelationId.set(null)">
+  </app-relation-detail-modal>
+}
