@@ -1,74 +1,143 @@
 <div class="p-4 space-y-6 pb-24 font-sans">
   <div class="flex items-center justify-between mb-2">
-    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Nuevo Pre-vale</h2>
-    <a routerLink="/dashboard" class="text-sm font-bold text-brand hover:underline">Cancelar</a>
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Alta de Cliente</h2>
+    <a routerLink="/mi-cartera" class="text-sm font-bold text-brand hover:underline">Cancelar</a>
   </div>
 
-  <!-- Stepper -->
-  <ol class="flex items-center w-full text-sm font-bold text-center text-gray-500 sm:text-base">
-      <li class="flex md:w-full items-center text-brand sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6">
-          <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200">
-              <svg class="w-4 h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-              </svg>
-              Personal
-          </span>
+  @if (errorMessage()) {
+    <div class="p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 font-medium">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  @if (successMessage()) {
+    <div class="p-4 bg-green-50 text-green-700 rounded-xl border border-green-200 font-medium flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+      {{ successMessage() }}
+    </div>
+  }
+
+  <!-- Stepper Header -->
+  <div class="mb-6">
+    <ol class="flex items-center w-full text-sm font-medium text-center text-gray-500 sm:text-base">
+      <li [ngClass]="{'text-brand': currentStep >= 1, 'text-gray-500': currentStep < 1}" class="flex md:w-full items-center sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8 cursor-pointer" (click)="setStep(1)">
+        <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200">
+          <span class="w-6 h-6 flex justify-center items-center rounded-full mr-2 text-xs font-bold" [ngClass]="currentStep >= 1 ? 'bg-brand text-white' : 'bg-gray-200 text-gray-600'">1</span>
+          <span class="hidden sm:inline-flex">Datos</span>
+        </span>
       </li>
-      <li class="flex md:w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6">
-          <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200">
-              <span class="me-2">2</span>
-              Fotos
-          </span>
+      <li [ngClass]="{'text-brand': currentStep >= 2, 'text-gray-500': currentStep < 2}" class="flex md:w-full items-center sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8 cursor-pointer" (click)="setStep(2)">
+        <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200">
+          <span class="w-6 h-6 flex justify-center items-center rounded-full mr-2 text-xs font-bold" [ngClass]="currentStep >= 2 ? 'bg-brand text-white' : 'bg-gray-200 text-gray-600'">2</span>
+          <span class="hidden sm:inline-flex">INE</span>
+        </span>
       </li>
-      <li class="flex items-center">
-          <span class="me-2">3</span>
-          Resumen
+      <li [ngClass]="{'text-brand': currentStep === 3, 'text-gray-500': currentStep < 3}" class="flex items-center cursor-pointer" (click)="setStep(3)">
+        <span class="w-6 h-6 flex justify-center items-center rounded-full mr-2 text-xs font-bold" [ngClass]="currentStep === 3 ? 'bg-brand text-white' : 'bg-gray-200 text-gray-600'">3</span>
+        <span class="hidden sm:inline-flex">Prevale</span>
       </li>
-  </ol>
+    </ol>
+  </div>
 
   <!-- Form Content -->
   <app-card [noPadding]="false">
-    <form class="space-y-5">
+    <div class="space-y-5">
       
-      <app-input 
-        label="Nombre Completo" 
-        placeholder="Ej. Juan Pérez" 
-        [(ngModel)]="nombre" 
-        name="nombre">
-      </app-input>
-      
-      <app-input 
-        label="CURP (Validador Automático)" 
-        placeholder="Ej. ABCD12345678901234" 
-        [(ngModel)]="curp" 
-        name="curp"
-        [hasIcon]="true">
-        <svg icon class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-        </svg>
-      </app-input>
+      @if (currentStep === 1) {
+        <div class="space-y-4 animate-fade-in">
+          <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Datos Personales</h3>
+          
+          <app-input label="Nombre(s)" placeholder="Ej. Ana María" [(ngModel)]="firstName" name="firstName" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
+          <app-input label="Apellido Paterno" placeholder="Ej. López" [(ngModel)]="lastNamePaternal" name="lastNamePaternal" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
+          <app-input label="Apellido Materno" placeholder="Ej. Hernández" [(ngModel)]="lastNameMaternal" name="lastNameMaternal" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
+          
+          <app-input label="CURP" placeholder="18 caracteres alfanuméricos" [(ngModel)]="curp" name="curp" [hasIcon]="true" filterRegex="[^a-zA-Z0-9]" [uppercase]="true" [maxLength]="18">
+            <svg icon class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+            </svg>
+          </app-input>
 
-      <!-- Dropzone for INE (Step 2 Preview) -->
-      <div class="pt-2 border-t border-gray-100">
-        <label class="block mb-2 text-sm font-bold text-gray-900">Fotografía de INE (Frente y Reverso)</label>
-        <div class="flex items-center justify-center w-full">
-            <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-brand border-dashed rounded-xl cursor-pointer bg-brand-50 hover:bg-brand-100 transition-colors">
-                <div class="flex flex-col items-center justify-center pt-5 pb-6 text-brand">
-                    <svg class="w-8 h-8 mb-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                    </svg>
-                    <p class="mb-2 text-sm font-bold"><span class="font-extrabold">Click para capturar</span> o galería</p>
-                </div>
-                <input id="dropzone-file" type="file" class="hidden" capture="environment" accept="image/*" />
-            </label>
-        </div> 
+          <app-input label="Fecha de Nacimiento" type="date" [(ngModel)]="birthDate" name="birthDate"></app-input>
+          <app-input label="RFC (Opcional)" placeholder="13 caracteres alfanuméricos" [(ngModel)]="rfc" name="rfc" filterRegex="[^a-zA-Z0-9]" [uppercase]="true" [maxLength]="13"></app-input>
+        </div>
+
+        <div class="space-y-4 pt-4 animate-fade-in">
+          <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Dirección (Opcional)</h3>
+          
+          <app-input label="Calle" placeholder="Ej. Av. Hidalgo" [(ngModel)]="street" name="street" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="200"></app-input>
+          <div class="flex gap-4">
+            <div class="flex-1"><app-input label="Número" placeholder="Ej. 123" [(ngModel)]="streetNumber" name="streetNumber" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="50"></app-input></div>
+            <div class="flex-1"><app-input label="C.P." placeholder="Ej. 27000" [(ngModel)]="postalCode" name="postalCode" filterRegex="[^0-9]" [maxLength]="5"></app-input></div>
+          </div>
+          <app-input label="Colonia" placeholder="Ej. Centro" [(ngModel)]="colonia" name="colonia" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="200"></app-input>
+          <div class="flex gap-4">
+            <div class="flex-1"><app-input label="Ciudad" placeholder="Ej. Torreón" [(ngModel)]="city" name="city" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input></div>
+            <div class="flex-1"><app-input label="Estado" placeholder="Ej. Coahuila" [(ngModel)]="state" name="state" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input></div>
+          </div>
+        </div>
+      }
+
+      @if (currentStep === 2) {
+        <div class="space-y-4 animate-fade-in">
+          <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Documentos (Opcional por ahora)</h3>
+          
+          <div>
+            <label class="block text-sm font-bold text-gray-900 mb-2">INE Frente</label>
+            <input type="file" (change)="onFileSelected($event, 'frente')" accept="image/*" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none p-2">
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-gray-900 mb-2">INE Reverso</label>
+            <input type="file" (change)="onFileSelected($event, 'reverso')" accept="image/*" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none p-2">
+          </div>
+        </div>
+      }
+
+      @if (currentStep === 3) {
+        <div class="space-y-4 animate-fade-in">
+          <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Solicitar Prevale</h3>
+          
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-bold text-gray-900 dark:text-white">Seleccionar Producto</label>
+            <select [(ngModel)]="productId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-brand focus:border-brand block w-full p-3 font-medium transition-colors" [disabled]="isLoadingProducts()">
+              <option value="" disabled selected>Selecciona un producto financiero</option>
+              @for (product of products(); track product.id) {
+                <option [value]="product.id">Código: {{ product.code }} - {{ (product.costCents / 100) | currency:'MXN' }} ({{ product.totalPeriods }} quin.)</option>
+              }
+            </select>
+          </div>
+          <h4 class="text-md font-bold text-gray-800 border-b pb-2 mt-4 mb-4">Datos Bancarios</h4>
+          <app-input label="Banco" placeholder="Ej. BBVA" [(ngModel)]="banco" name="banco" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
+          <app-input label="CLABE Interbancaria" placeholder="18 digitos" [(ngModel)]="clabe" name="clabe" filterRegex="[^0-9]" [maxLength]="18"></app-input>
+
+
+          
+          
+          <div class="mb-6">
+            
+          </div>
+        </div>
+      }
+
+      <!-- Controles Inferiores -->
+      <div class="pt-6 border-t mt-6 flex gap-3">
+        @if (currentStep > 1) {
+          <div class="flex-1">
+            <app-button variant="outline" size="lg" [fullWidth]="true" [disabled]="isLoading()" (onClick)="prevStep()">Atrás</app-button>
+          </div>
+        }
+        
+        <div class="flex-1">
+          @if (currentStep < 3) {
+            <app-button variant="primary" size="lg" [fullWidth]="true" (onClick)="nextStep()">Siguiente</app-button>
+          } @else {
+            <app-button variant="primary" size="lg" [fullWidth]="true" [disabled]="isLoading() || !productId" (onClick)="finalizarRegistro()">
+              @if(isLoading()) { Registrando... } @else { Finalizar y Crear }
+            </app-button>
+          }
+        </div>
       </div>
 
-      <div class="pt-2">
-        <app-button variant="primary" size="lg" [fullWidth]="true">
-          Siguiente Paso
-        </app-button>
-      </div>
-    </form>
+    </div>
   </app-card>
 </div>

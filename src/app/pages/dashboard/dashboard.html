@@ -1,35 +1,49 @@
 <div class="p-4 pt-6 space-y-5 pb-24 font-sans">
   
-  <!-- Encabezado / Alerta -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Hola, Distribuidora</h2>
-      <p class="text-sm text-gray-500">Resumen de tu cuenta</p>
+  @if (isLoading()) {
+    <div class="flex items-center justify-center p-12">
+      <svg class="animate-spin h-8 w-8 text-brand" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      </svg>
     </div>
-    <div class="bg-brand-50 text-brand text-xs font-bold px-3 py-1 rounded-full border border-brand-200">
-      Categoría Plata
+  } @else if (errorMessage()) {
+    <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+      {{ errorMessage() }}
     </div>
-  </div>
-
-  <!-- Status Financiero (Card Reutilizable) -->
-  <app-card title="Status Financiero" subtitle="Tu línea de crédito" extraClasses="border-l-4 border-l-brand">
-    <div class="grid grid-cols-2 gap-4 text-center mt-2">
-      <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
-        <p class="text-xs text-gray-500 uppercase tracking-wide font-bold mb-1">Límite Total</p>
-        <p class="text-xl font-bold text-gray-900">$20,000</p>
+  } @else if (status()) {
+    <!-- Encabezado / Alerta -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Hola, {{ status()?.fullName?.split(' ')?.[0] || 'Distribuidora' }}</h2>
+        <p class="text-sm text-gray-500">Resumen de tu cuenta</p>
       </div>
-      <div class="p-3 bg-green-50 rounded-xl border border-green-100">
-        <p class="text-xs text-green-700 uppercase tracking-wide font-bold mb-1">Disponible</p>
-        <p class="text-xl font-bold text-green-700">$4,600</p>
+      <div class="bg-brand-50 text-brand text-xs font-bold px-3 py-1 rounded-full border border-brand-200">
+        Categoría {{ status()?.categoryName }}
       </div>
     </div>
-  </app-card>
 
-  <!-- Chart Card -->
-  <app-card title="Uso de Crédito">
-    <!-- Pie Chart -->
-    <div class="py-2" id="donut-chart"></div>
-  </app-card>
+
+    <!-- Status Financiero (Card Reutilizable) -->
+    <app-card title="Status Financiero" subtitle="Tu línea de crédito" extraClasses="border-l-4 border-l-brand">
+      <div class="grid grid-cols-2 gap-4 text-center mt-2">
+        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+          <p class="text-xs text-gray-500 uppercase tracking-wide font-bold mb-1">Límite Total</p>
+          <p class="text-xl font-bold text-gray-900">{{ (status()!.creditLimitCents / 100) | currency:'MXN' }}</p>
+        </div>
+        <div class="p-3 bg-green-50 rounded-xl border border-green-100">
+          <p class="text-xs text-green-700 uppercase tracking-wide font-bold mb-1">Disponible</p>
+          <p class="text-xl font-bold text-green-700">{{ (status()!.creditAvailableCents / 100) | currency:'MXN' }}</p>
+        </div>
+      </div>
+    </app-card>
+
+    <!-- Chart Card -->
+    <app-card title="Uso de Crédito">
+      <!-- Pie Chart -->
+      <div class="py-2" id="donut-chart"></div>
+    </app-card>
+  }
 
   <!-- Historial e Incentivos -->
   <app-card title="Historial e Incentivos" subtitle="Progreso para subir de categoría">
@@ -64,9 +78,7 @@
       </li>
     </ul>
     
-    <app-button variant="outline" size="md" [fullWidth]="true">
-      Solicitar Aumento de Crédito
-    </app-button>
+
   </app-card>
 
   <!-- Quick Actions Panel -->
