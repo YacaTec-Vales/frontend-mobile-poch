@@ -200,7 +200,9 @@ jobs:
             # este sync, el browser recibe 500 (Permission denied por
             # SELinux context var_t en lugar de httpd_sys_content_t).
             NGINX_DEST=""
-            case "$DEST" in
+            # Usar `$DEST/` para que `/var/www/tecu` (sin slash)
+            # matchee el patron `/var/www/tecu/*` (con slash).
+            case "$DEST/" in
               /var/www/tecu/*)    NGINX_DEST="/opt/misvales/frontends/desktop/browser" ;;
               /var/www/calpix/*)  NGINX_DEST="/opt/misvales/frontends/tablet/browser" ;;
               /var/www/poch/*)    NGINX_DEST="/opt/misvales/frontends/mobile/browser" ;;
