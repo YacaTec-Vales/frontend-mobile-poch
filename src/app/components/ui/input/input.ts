@@ -24,7 +24,10 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
       useExisting: forwardRef(() => InputComponent),
       multi: true
     }
-  ]
+  ],
+  host: {
+    class: 'block w-full border-0 p-0 bg-transparent ring-0 shadow-none'
+  }
 })
 export class InputComponent implements ControlValueAccessor {
   /** Etiqueta descriptiva del campo */
