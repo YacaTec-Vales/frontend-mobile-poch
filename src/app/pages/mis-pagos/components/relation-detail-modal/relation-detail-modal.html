@@ -1,0 +1,88 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm sm:p-0">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+    
+    <!-- Header -->
+    <div class="px-6 py-4 flex items-center justify-between bg-gray-50/50 border-b border-gray-100">
+      <h3 class="text-xl font-bold text-gray-900">Detalle de la Relación</h3>
+      <button (click)="onClose()" class="text-gray-400 hover:text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-colors">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="flex-1 overflow-y-auto p-6">
+      @if (isLoading()) {
+        <div class="flex justify-center items-center py-12">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
+        </div>
+      } @else if (error()) {
+        <div class="p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
+          {{ error() }}
+        </div>
+      } @else if (relation()) {
+        <div class="space-y-6">
+          
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-bold text-gray-900">Referencia de Pago</p>
+              <p class="text-lg font-mono text-brand font-bold">{{ relation()!.referencePayment || 'N/A' }}</p>
+            </div>
+            <div>
+              @if (relation()!.reconciliationStatus === 'LIQUIDADO') {
+                <span class="bg-green-100 text-green-800 text-sm font-bold px-3 py-1 rounded-full border border-green-300">Liquidado</span>
+              } @else {
+                <span class="bg-brand-50 text-brand text-sm font-bold px-3 py-1 rounded-full border border-brand-200">{{ relation()!.reconciliationStatus }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <hr class="border-gray-100" />
+
+          <!-- Details Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
+            <div>
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Fecha de Corte</p>
+              <p class="mt-1 text-sm font-medium text-gray-900">{{ relation()!.cutDate | date:'longDate' }}</p>
+            </div>
+            
+            <div>
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Límite de Pago</p>
+              <p class="mt-1 text-sm font-medium text-gray-900">{{ relation()!.paymentDeadlineDate | date:'longDate' }}</p>
+            </div>
+
+            <div>
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total a Pagar</p>
+              <p class="mt-1 text-sm font-bold text-gray-900">{{ (relation()!.totalToPayCents / 100) | currency:'MXN' }}</p>
+            </div>
+            
+            <div>
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Pagado</p>
+              <p class="mt-1 text-sm font-bold text-green-700">{{ (relation()!.totalPaidCents / 100) | currency:'MXN' }}</p>
+            </div>
+            
+            <div>
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Adeudo Restante</p>
+              <p class="mt-1 text-sm font-bold text-red-700">{{ (relation()!.remainingCents / 100) | currency:'MXN' }}</p>
+            </div>
+            
+            <div>
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Penalizaciones</p>
+              <p class="mt-1 text-sm font-medium text-gray-900">{{ (relation()!.totalPenaltiesCents / 100) | currency:'MXN' }}</p>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
+      <button (click)="onClose()" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 shadow-sm">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>

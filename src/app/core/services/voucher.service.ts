@@ -13,4 +13,8 @@ export class VoucherService {
   create(dto: CreateVoucherDto): Observable<ApiSuccessResponse<VoucherResponse>> {
     return this.http.post<ApiSuccessResponse<VoucherResponse>>(this.baseUrl, dto);
   }
+
+  cancelVoucher(folio: string, reason: string): Observable<ApiSuccessResponse<any>> {
+    return this.http.post<ApiSuccessResponse<any>>(`${this.baseUrl}/${folio}/cancel`, { reason });
+  }
 }

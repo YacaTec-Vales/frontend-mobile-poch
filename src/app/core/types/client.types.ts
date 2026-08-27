@@ -14,15 +14,8 @@ export interface CreateClientDto {
   city?: string;
   bankAccount?: {
     clabe: string;
+    banco?: string;
   };
-  /**
-   * UUID del documento del INE en `app.document`. Se sube primero via
-   * `POST /uploads` con `documentType='ine'` y se manda el `id` aqui.
-   * El backend valida que exista y lo persiste en `client.ine_document_id`.
-   */
-  ineDocumentId?: string;
-  /** UUID del comprobante de domicilio (misma dinamica que `ineDocumentId`). */
-  addressProofDocumentId?: string;
 }
 
 export interface TransferClientDto {
@@ -35,6 +28,24 @@ export interface ClientTransferResponse {
   id: string;
   previousDistributorId: string;
   newDistributorId: string;
+}
+
+export interface Voucher {
+  id: string;
+  folio: string;
+  voucherType: string;
+  status: 'ACTIVO' | 'CANCELADO' | 'LIQUIDADO' | string;
+  productId: string;
+  distributorId: string;
+  clientId: string;
+  amountCents: number;
+  paidPeriods: number;
+  totalPeriods: number;
+  totalToPayCents: number;
+  paymentPerPeriodCents: number;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
+  createdAt: string;
 }
 
 export interface Client {
@@ -53,9 +64,9 @@ export interface Client {
   birthPlace: string | null;
   state: string | null;
   city: string | null;
-  // Campos extra para la UI (asumidos o a la espera de confirmación)
   outstandingCents?: number;
   status?: 'ACTIVO' | 'MOROSO' | 'BLOQUEADO' | string;
+  vouchers?: Voucher[];
 }
 
 export interface PaginatedClients {

@@ -41,3 +41,10 @@ export interface ChangePasswordDto {
   currentPassword: string;
   newPassword: string;
 }
+
+
+/** Respuesta de POST /mfa/setup */
+export interface MfaSetupResponse {
+  otpauthUrl: string;
+  backupCodes: string[];
+}

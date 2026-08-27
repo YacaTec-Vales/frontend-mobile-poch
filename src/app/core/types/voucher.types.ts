@@ -1,8 +1,7 @@
 export interface CreateVoucherDto {
   clientId: string;
   productId: string;
-  amountCents: number;
-}
+  }
 
 export interface VoucherResponse {
   id: string;

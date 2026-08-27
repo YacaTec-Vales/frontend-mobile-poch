@@ -15,7 +15,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const isPublic = PUBLIC_PATHS.some((path) => req.url.includes(path));
 
-  let headers = req.headers.set('x-client-app', 'Poch');
+  let headers = req.headers;
+
+  // Solo inyectar Poch si el servicio no especificó otra app (como MFA que necesita Tecu)
+  if (!headers.has('x-client-app')) {
+    headers = headers.set('x-client-app', 'Poch');
+  }
+  
+  if (!headers.has('X-Origin')) {
+    headers = headers.set('X-Origin', 'vpn');
+  }
 
   if (token && !isPublic) {
     headers = headers.set('Authorization', `Bearer ${token}`);

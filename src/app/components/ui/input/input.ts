@@ -24,7 +24,10 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
       useExisting: forwardRef(() => InputComponent),
       multi: true
     }
-  ]
+  ],
+  host: {
+    class: 'block w-full border-0 p-0 bg-transparent ring-0 shadow-none'
+  }
 })
 export class InputComponent implements ControlValueAccessor {
   /** Etiqueta descriptiva del campo */
@@ -47,6 +50,15 @@ export class InputComponent implements ControlValueAccessor {
   
   /** Estado de deshabilitado */
   @Input() disabled: boolean = false;
+
+  /** Regex para filtrar caracteres no deseados en tiempo real. Ej: '[^a-zA-Z]' */
+  @Input() filterRegex?: string;
+
+  /** Forzar el texto a mayúsculas en tiempo real */
+  @Input() uppercase: boolean = false;
+
+  /** Longitud máxima permitida */
+  @Input() maxLength?: number;
 
   // Valor interno
   value: any = '';
@@ -88,7 +100,23 @@ export class InputComponent implements ControlValueAccessor {
    */
   onInput(event: Event): void {
     const target = event.target as HTMLInputElement;
-    this.value = target.value;
+    let newValue = target.value;
+
+    if (this.filterRegex) {
+      const regex = new RegExp(this.filterRegex, 'g');
+      newValue = newValue.replace(regex, '');
+    }
+
+    if (this.uppercase) {
+      newValue = newValue.toUpperCase();
+    }
+
+    // Actualizamos el DOM directamente para prevenir desincronización de la vista
+    if (target.value !== newValue) {
+      target.value = newValue;
+    }
+
+    this.value = newValue;
     this.onChange(this.value);
   }
 }

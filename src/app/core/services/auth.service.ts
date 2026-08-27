@@ -70,15 +70,22 @@ export class AuthService {
   }
 
   /**
-   * Cambia la contraseña del usuario autenticado.
+   * Cambia la contraseña del usuario.
    * POST /api/v1/auth/change-password
    */
   changePassword(
     dto: ChangePasswordDto,
+    partialToken?: string
   ): Observable<ApiSuccessResponse<void>> {
+    let headers: any = { 'x-client-app': 'Poch' };
+    if (partialToken) {
+      headers['Authorization'] = `Bearer ${partialToken}`;
+    }
+    
     return this.http.post<ApiSuccessResponse<void>>(
       `${this.baseUrl}/change-password`,
       dto,
+      { headers }
     );
   }
 
@@ -101,4 +108,57 @@ export class AuthService {
   isAuthenticated(): boolean {
     return this.tokenStorage.hasToken();
   }
+
+  /**
+   * Verifica el código MFA para completar el login.
+   * POST /api/v1/auth/mfa-verify
+   */
+  verifyMfa(code: string, partialToken: string): Observable<ApiSuccessResponse<LoginResponse>> {
+    const headers = {
+      'Authorization': `Bearer ${partialToken}`,
+      'x-client-app': 'Poch'
+    };
+    return this.http.post<ApiSuccessResponse<LoginResponse>>(
+      `${this.baseUrl}/mfa-verify`,
+      { code },
+      { headers }
+    );
+  }
+
+  /**
+   * Genera la URL del QR para configurar el MFA por primera vez.
+   * POST /api/v1/mfa/setup
+   */
+  setupMfa(partialToken: string): Observable<ApiSuccessResponse<{ qrCodeUrl: string }>> {
+    const headers = {
+      'Authorization': `Bearer ${partialToken}`,
+      'x-client-app': 'Poch'
+    };
+    // Note: Assuming MFA routes are under /mfa or /auth/mfa depending on the backend.
+    // The markdown says /api/v1/mfa/setup, so baseUrl is not used here if it's /api/v1/auth.
+    const url = `${environment.apiUrl}/mfa/setup`;
+    return this.http.post<ApiSuccessResponse<{ qrCodeUrl: string }>>(
+      url,
+      {},
+      { headers }
+    );
+  }
+
+  /**
+   * Verifica el código MFA tras escanear el QR en la configuración.
+   * POST /api/v1/mfa/verify-setup
+   */
+  verifySetupMfa(code: string, partialToken: string): Observable<ApiSuccessResponse<LoginResponse>> {
+    const headers = {
+      'Authorization': `Bearer ${partialToken}`,
+      'x-client-app': 'Poch'
+    };
+    const url = `${environment.apiUrl}/mfa/verify-setup`;
+    return this.http.post<ApiSuccessResponse<LoginResponse>>(
+      url,
+      { code },
+      { headers }
+    );
+  }
+
 }
