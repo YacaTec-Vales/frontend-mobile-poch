@@ -1,21 +1,34 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CardComponent } from '../../components/ui/card/card';
 import { InputComponent } from '../../components/ui/input/input';
 import { ButtonComponent } from '../../components/ui/button/button';
-import { RouterLink } from '@angular/router';
 import { ClientService } from '../../core/services/client.service';
 import { UploadService } from '../../core/services/upload.service';
 import { ProductService } from '../../core/services/product.service';
 import { VoucherService } from '../../core/services/voucher.service';
 import type { CreateClientDto } from '../../core/types/client.types';
 import type { Product } from '../../core/types/product.types';
+import {
+  validateName,
+  validateCurp,
+  validateRfc,
+  validateBirthDate,
+  validatePostalCode,
+  validateBankName,
+  validateClabe,
+} from '../../core/validators/form-validators';
 
+/**
+ * Wizard de alta de cliente + generacion de prevale.
+ * Validacion: usa `core/validators/form-validators.ts` para reflejar
+ * la politica del backend. Errores por campo via `[error]` en app-input.
+ */
 @Component({
   selector: 'app-nuevo-cliente',
   standalone: true,
@@ -64,13 +77,100 @@ export class NuevoCliente implements OnInit {
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
 
+  /** Habilita mostrar errores por campo tras submit del step. */
+  readonly submittedStep1 = signal(false);
+  readonly submittedStep3 = signal(false);
+
+  // ---- Errores Step 1 (datos personales + direccion) ----
+  readonly firstNameError = computed(() => {
+    if (!this.submittedStep1()) return '';
+    return validateName(this.firstName, 'nombre');
+  });
+
+  readonly lastNamePaternalError = computed(() => {
+    if (!this.submittedStep1()) return '';
+    return validateName(this.lastNamePaternal, 'apellido paterno');
+  });
+
+  readonly lastNameMaternalError = computed(() => {
+    if (!this.submittedStep1()) return '';
+    return validateName(this.lastNameMaternal, 'apellido materno');
+  });
+
+  readonly curpError = computed(() => {
+    if (!this.submittedStep1()) return '';
+    return validateCurp(this.curp, 'CURP');
+  });
+
+  readonly birthDateError = computed(() => {
+    if (!this.submittedStep1()) return '';
+    return validateBirthDate(this.birthDate);
+  });
+
+  readonly rfcError = computed(() => {
+    if (!this.submittedStep1()) return '';
+    if (!this.rfc) return ''; // opcional
+    return validateRfc(this.rfc, 'RFC');
+  });
+
+  readonly postalCodeError = computed(() => {
+    if (!this.submittedStep1()) return '';
+    if (!this.postalCode) return ''; // opcional
+    return validatePostalCode(this.postalCode, 'codigo postal');
+  });
+
+  readonly canGoToStep2 = computed(() => {
+    return (
+      !this.firstNameError() &&
+      !this.lastNamePaternalError() &&
+      !this.lastNameMaternalError() &&
+      !this.curpError() &&
+      !this.birthDateError() &&
+      !this.rfcError() &&
+      !this.postalCodeError() &&
+      this.firstName.trim().length > 0 &&
+      this.lastNamePaternal.trim().length > 0 &&
+      this.lastNameMaternal.trim().length > 0 &&
+      this.curp.length === 18 &&
+      this.birthDate.length > 0
+    );
+  });
+
+  // ---- Errores Step 3 (vale + banco) ----
+  readonly productIdError = computed(() => {
+    if (!this.submittedStep3()) return '';
+    if (!this.productId) return 'Selecciona un producto para el prevale.';
+    return '';
+  });
+
+  readonly bancoError = computed(() => {
+    if (!this.submittedStep3()) return '';
+    return validateBankName(this.banco);
+  });
+
+  readonly clabeError = computed(() => {
+    if (!this.submittedStep3()) return '';
+    return validateClabe(this.clabe, 'CLABE interbancaria');
+  });
+
+  readonly canFinalize = computed(() => {
+    return (
+      !this.productIdError() &&
+      !this.bancoError() &&
+      !this.clabeError() &&
+      !!this.productId &&
+      !!this.banco &&
+      this.clabe.length === 18
+    );
+  });
+
   ngOnInit() {
     this.productService.getProducts().subscribe({
       next: (res) => {
         this.products.set(res.data || []);
         this.isLoadingProducts.set(false);
       },
-      error: () => this.isLoadingProducts.set(false)
+      error: () => this.isLoadingProducts.set(false),
     });
   }
 
@@ -80,7 +180,8 @@ export class NuevoCliente implements OnInit {
     }
   }
 
-  // Métodos de sanitización
+  // Métodos de sanitización (siguen aplicando los regex de UI para
+  // que el usuario no pueda pegar caracteres no validos).
   sanitizeName(field: 'firstName' | 'lastNamePaternal' | 'lastNameMaternal', value: string) {
     let sanitized = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
     sanitized = sanitized.replace(/\s+/g, ' ').slice(0, 100);
@@ -105,32 +206,32 @@ export class NuevoCliente implements OnInit {
     this[field] = sanitized;
   }
 
+  sanitizeBanco(value: string) {
+    let sanitized = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+    sanitized = sanitized.replace(/\s+/g, ' ').slice(0, 80);
+    this.banco = sanitized;
+  }
+
+  sanitizeClabe(value: string) {
+    this.clabe = value.replace(/[^0-9]/g, '').slice(0, 18);
+  }
+
   nextStep() {
     this.errorMessage.set('');
-    if (this.currentStep === 1) {
-      if (!this.firstName || !this.lastNamePaternal || !this.lastNameMaternal || !this.curp || !this.birthDate) {
-        this.errorMessage.set('Completa los campos requeridos (Nombre, Apellidos, CURP, Fecha).');
-        return;
-      }
-      if (this.curp.length !== 18) {
-        this.errorMessage.set('La CURP debe tener exactamente 18 caracteres alfanuméricos.');
-        return;
-      }
-      if (this.rfc && (this.rfc.length < 10 || this.rfc.length > 13)) {
-        this.errorMessage.set('El RFC debe tener entre 10 y 13 caracteres alfanuméricos.');
-        return;
-      }
-      if (this.postalCode && this.postalCode.length !== 5) {
-        this.errorMessage.set('El Código Postal debe tener exactamente 5 dígitos.');
-        return;
-      }
+    this.submittedStep1.set(true);
+
+    if (!this.canGoToStep2()) {
+      return;
     }
+
     this.currentStep++;
+    this.submittedStep1.set(false); // reset para el siguiente step
   }
 
   prevStep() {
     this.errorMessage.set('');
     this.currentStep--;
+    this.submittedStep1.set(false);
   }
 
   onFileSelected(event: any, side: 'frente' | 'reverso') {
@@ -144,22 +245,12 @@ export class NuevoCliente implements OnInit {
   finalizarRegistro() {
     this.errorMessage.set('');
     this.successMessage.set('');
+    this.submittedStep3.set(true);
 
-    if (!this.productId) {
-      this.errorMessage.set('Selecciona un producto para el prevale.');
+    if (!this.canFinalize()) {
       return;
     }
 
-    if (!this.banco || !this.clabe) {
-      this.errorMessage.set('Completa los datos bancarios (Banco y CLABE).');
-      return;
-    }
-
-    if (this.clabe.length !== 18) {
-      this.errorMessage.set('La CLABE debe tener exactamente 18 dígitos.');
-      return;
-    }
-    
     this.isLoading.set(true);
     this.successMessage.set('Registrando cliente...');
 
@@ -178,15 +269,15 @@ export class NuevoCliente implements OnInit {
       city: this.city.trim() || undefined,
       bankAccount: {
         clabe: this.clabe.trim(),
-        banco: this.banco.trim()
-      }
+        banco: this.banco.trim(),
+      },
     };
 
     this.clientService.createClient(clientDto).subscribe({
       next: (clientRes) => {
         const clientId = clientRes.data.id;
         this.successMessage.set('Subiendo documentos...');
-        
+
         const uploadTasks = [];
         if (this.ineFrente) {
           uploadTasks.push(this.uploadService.uploadDocument(this.ineFrente, 'ine', JSON.stringify({ clientId, side: 'frente' })).pipe(catchError(() => of(null))));
@@ -199,24 +290,24 @@ export class NuevoCliente implements OnInit {
           this.successMessage.set('Generando prevale...');
           this.voucherService.create({
             clientId: clientId,
-            productId: this.productId
+            productId: this.productId,
           }).subscribe({
-            next: (voucherRes) => {
+            next: () => {
               this.isLoading.set(false);
-              this.successMessage.set('¡Alta y Prevale generados con éxito!');
+              this.successMessage.set('¡Alta y Prevale generados con exito!');
               setTimeout(() => this.router.navigate(['/mi-cartera']), 2000);
             },
             error: (err: HttpErrorResponse) => {
               this.isLoading.set(false);
-              this.errorMessage.set(err.error?.message || 'Ocurrió un error al generar el prevale.');
-            }
+              this.errorMessage.set(err.error?.message || 'Ocurrio un error al generar el prevale.');
+            },
           });
         };
 
         if (uploadTasks.length > 0) {
           forkJoin(uploadTasks).subscribe({
             next: () => executeVoucher(),
-            error: () => executeVoucher()
+            error: () => executeVoucher(),
           });
         } else {
           executeVoucher();
@@ -224,8 +315,8 @@ export class NuevoCliente implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
-        this.errorMessage.set(err.error?.message || 'Ocurrió un error al crear el cliente.');
-      }
+        this.errorMessage.set(err.error?.message || 'Ocurrio un error al crear el cliente.');
+      },
     });
   }
 }
