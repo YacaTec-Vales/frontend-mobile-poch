@@ -3,57 +3,132 @@
     <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Centro de Reclamos</h2>
   </div>
 
+  @if (successMessage()) {
+    <div class="p-4 bg-green-50 text-green-700 rounded-xl border border-green-200 font-medium flex items-center gap-2" role="alert">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+      {{ successMessage() }}
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 font-medium" role="alert">
+      {{ errorMessage() }}
+    </div>
+  }
+
   <app-card title="Nuevo Reclamo" subtitle="Reporta problemas con pagos, clientes o plataforma">
-    <form class="space-y-5 mt-2">
+    <form class="space-y-5 mt-2" (submit)="onSubmit(); $event.preventDefault()" novalidate>
+
       <div>
-        <label class="block mb-2 text-sm font-bold text-gray-900">Tipo de Reclamo</label>
-        <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-brand focus:border-brand block w-full p-3 shadow-sm font-medium">
-          <option>Problema con un cliente</option>
-          <option>Fallo en la aplicación</option>
-          <option>Duda con mi estado de cuenta</option>
-          <option>Otro</option>
+        <label for="tipoReclamo" class="block mb-2 text-sm font-bold text-gray-900">Tipo de Reclamo *</label>
+        <select id="tipoReclamo" name="tipoReclamo"
+          [value]="tipo()"
+          (change)="onTipoChange($any($event.target).value)"
+          class="bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-brand focus:border-brand block w-full p-3 shadow-sm font-medium"
+          [class.border-red-500]="tipoError()"
+          [class.border-gray-300]="!tipoError()"
+          [attr.aria-invalid]="!!tipoError()"
+          [attr.aria-describedby]="tipoError() ? 'tipo-error' : null">
+          <option value="CLIENTE">Problema con un cliente</option>
+          <option value="APP">Fallo en la aplicacion</option>
+          <option value="CUENTA">Duda con mi estado de cuenta</option>
+          <option value="OTRO">Otro</option>
         </select>
+        @if (tipoError()) {
+          <p id="tipo-error" role="alert" class="mt-2 text-sm text-red-700 font-medium">{{ tipoError() }}</p>
+        }
       </div>
 
       <div>
-        <label class="block mb-2 text-sm font-bold text-gray-900">Descripción detallada</label>
-        <textarea rows="4" class="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-brand focus:border-brand shadow-sm font-medium" placeholder="Escribe aquí los detalles del problema..."></textarea>
+        <label for="descripcion" class="block mb-2 text-sm font-bold text-gray-900">Descripcion detallada *</label>
+        <textarea id="descripcion" name="descripcion" rows="4"
+          [value]="descripcion()"
+          (input)="onDescripcionChange($any($event.target).value)"
+          maxlength="1000"
+          class="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border focus:ring-brand focus:border-brand shadow-sm font-medium"
+          [class.border-red-500]="descripcionError()"
+          [class.border-gray-300]="!descripcionError()"
+          placeholder="Describe el problema con el mayor detalle posible..."
+          [attr.aria-invalid]="!!descripcionError()"
+          [attr.aria-describedby]="descripcionError() ? 'descripcion-error' : 'descripcion-hint'">
+        </textarea>
+        @if (descripcionError()) {
+          <p id="descripcion-error" role="alert" class="mt-2 text-sm text-red-700 font-medium">{{ descripcionError() }}</p>
+        } @else {
+          <p id="descripcion-hint" class="mt-2 text-xs text-gray-500">Minimo 20 caracteres. Maximo 1000.</p>
+        }
       </div>
 
-      <!-- Evidencia Fotográfica -->
+      <!-- Evidencia Fotografica -->
       <div class="pt-2">
-        <label class="block mb-2 text-sm font-bold text-gray-900">Evidencia Fotográfica (Opcional)</label>
-        <div class="flex items-center justify-center w-full">
+        <label class="block mb-2 text-sm font-bold text-gray-900">Evidencia Fotografica (Opcional)</label>
+        @if (evidenciaNombre()) {
+          <div class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <svg class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="text-sm font-medium text-blue-800 flex-1 truncate">{{ evidenciaNombre() }}</span>
+            <button type="button" class="text-xs text-red-600 hover:text-red-800 font-bold" (click)="clearEvidencia()" aria-label="Quitar evidencia">
+              Quitar
+            </button>
+          </div>
+        } @else {
+          <div class="flex items-center justify-center w-full">
             <label for="evidence-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
-                <div class="flex flex-col items-center justify-center pt-5 pb-6 text-gray-500">
-                    <svg class="w-8 h-8 mb-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                    </svg>
-                    <p class="mb-2 text-sm font-bold"><span class="font-extrabold text-brand">Sube una imagen</span> o tómala</p>
-                    <p class="text-xs">PNG, JPG (Max. 5MB)</p>
-                </div>
-                <input id="evidence-file" type="file" class="hidden" capture="environment" accept="image/*" />
+              <div class="flex flex-col items-center justify-center pt-5 pb-6 text-gray-500">
+                <svg class="w-8 h-8 mb-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                </svg>
+                <p class="mb-2 text-sm font-bold"><span class="font-extrabold text-brand">Sube una imagen</span> o tomala</p>
+                <p class="text-xs">PNG, JPG (Max. 5MB)</p>
+              </div>
+              <input id="evidence-file" type="file" class="hidden" capture="environment" accept="image/*" (change)="onEvidenciaSelected($event)" />
             </label>
-        </div> 
+          </div>
+        }
       </div>
 
       <div class="pt-4">
-        <app-button variant="primary" size="lg" [fullWidth]="true">
-          Enviar Reclamo
+        <app-button variant="primary" size="lg" [fullWidth]="true" [disabled]="!canSubmit()">
+          @if (isSubmitting()) {
+            <span class="flex items-center gap-2">
+              <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Enviando...
+            </span>
+          } @else {
+            Enviar Reclamo
+          }
         </app-button>
       </div>
     </form>
   </app-card>
 
   <h3 class="text-lg font-bold text-gray-900 mt-6 mb-4">Mis Reclamos Recientes</h3>
-  
-  <app-card [noPadding]="false">
-      <div class="flex items-center justify-between mb-3">
-          <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2.5 py-0.5 rounded border border-yellow-300">En Revisión</span>
-          <span class="text-xs text-gray-500 font-medium">Hace 1 día</span>
-      </div>
-      <h5 class="mb-1 text-base font-bold text-gray-900">Cliente se niega a pagar</h5>
-      <p class="font-medium text-sm text-gray-600">Folio: #RC-9831. Reporte levantado para iniciar cobranza externa.</p>
-  </app-card>
+
+  @if (reclamosRecientes().length === 0) {
+    <div class="p-6 text-center bg-gray-50 rounded-xl border border-gray-200">
+      <svg class="w-10 h-10 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <p class="text-sm font-medium text-gray-600">Aun no has enviado reclamos.</p>
+    </div>
+  } @else {
+    @for (reclamo of reclamosRecientes(); track reclamo.id) {
+      <app-card [noPadding]="false">
+        <div class="flex items-center justify-between mb-3">
+          <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2.5 py-0.5 rounded border border-yellow-300">En Revision</span>
+          <span class="text-xs text-gray-500 font-medium">{{ tiempoRelativo(reclamo.fecha) }}</span>
+        </div>
+        <div class="flex items-center justify-between mb-1">
+          <h5 class="text-base font-bold text-gray-900">{{ tipoLabel(reclamo.tipo) }}</h5>
+          <span class="text-xs font-mono text-gray-500">Folio: {{ reclamo.id }}</span>
+        </div>
+        <p class="font-medium text-sm text-gray-600 line-clamp-3">{{ reclamo.descripcion }}</p>
+      </app-card>
+    }
+  }
 
 </div>

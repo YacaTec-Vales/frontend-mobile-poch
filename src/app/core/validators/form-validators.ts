@@ -15,9 +15,12 @@
  *  - Todos los nombres de campo son cadenas vacias = no hay error.
  *  - Mensajes en espanol, tono profesional, sin exclamaciones.
  *  - Las funciones puras son testeables de forma aislada.
+ *  - Este helper se replica identico en los 3 frontends (Tecu, Poch,
+ *    Calipx) para mantener la misma logica de validacion en todas
+ *    las apps. Cambios aqui deben replicarse en los otros repos.
  *
  * @module core/validators/form-validators
- * @author Equipo de desarrollo Mis Vales
+ * @author Equipo de desarrollo Poch
  * @since 1.0.0
  */
 
