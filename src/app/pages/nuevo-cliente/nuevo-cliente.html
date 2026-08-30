@@ -5,7 +5,7 @@
   </div>
 
   @if (errorMessage()) {
-    <div class="p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 font-medium">
+    <div class="p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 font-medium" role="alert">
       {{ errorMessage() }}
     </div>
   }
@@ -42,37 +42,37 @@
   <!-- Form Content -->
   <app-card [noPadding]="false">
     <div class="space-y-5">
-      
+
       @if (currentStep === 1) {
         <div class="space-y-4 animate-fade-in">
           <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Datos Personales</h3>
-          
-          <app-input label="Nombre(s)" placeholder="Ej. Ana María" [(ngModel)]="firstName" name="firstName" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
-          <app-input label="Apellido Paterno" placeholder="Ej. López" [(ngModel)]="lastNamePaternal" name="lastNamePaternal" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
-          <app-input label="Apellido Materno" placeholder="Ej. Hernández" [(ngModel)]="lastNameMaternal" name="lastNameMaternal" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
-          
-          <app-input label="CURP" placeholder="18 caracteres alfanuméricos" [(ngModel)]="curp" name="curp" [hasIcon]="true" filterRegex="[^a-zA-Z0-9]" [uppercase]="true" [maxLength]="18">
+
+          <app-input label="Nombre(s)" placeholder="Ej. Ana Maria" [(ngModel)]="firstName" name="firstName" (ngModelChange)="sanitizeName('firstName', $event)" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100" [error]="firstNameError()" [attr.aria-invalid]="!!firstNameError()" [attr.aria-describedby]="firstNameError() ? 'firstName-error' : null"></app-input>
+          <app-input label="Apellido Paterno" placeholder="Ej. Lopez" [(ngModel)]="lastNamePaternal" name="lastNamePaternal" (ngModelChange)="sanitizeName('lastNamePaternal', $event)" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100" [error]="lastNamePaternalError()" [attr.aria-invalid]="!!lastNamePaternalError()" [attr.aria-describedby]="lastNamePaternalError() ? 'lastNamePaternal-error' : null"></app-input>
+          <app-input label="Apellido Materno" placeholder="Ej. Hernandez" [(ngModel)]="lastNameMaternal" name="lastNameMaternal" (ngModelChange)="sanitizeName('lastNameMaternal', $event)" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100" [error]="lastNameMaternalError()" [attr.aria-invalid]="!!lastNameMaternalError()" [attr.aria-describedby]="lastNameMaternalError() ? 'lastNameMaternal-error' : null"></app-input>
+
+          <app-input label="CURP" placeholder="18 caracteres alfanumericos" [(ngModel)]="curp" name="curp" [hasIcon]="true" (ngModelChange)="sanitizeCurp($event)" filterRegex="[^a-zA-Z0-9]" [uppercase]="true" [maxLength]="18" [error]="curpError()" [attr.aria-invalid]="!!curpError()" [attr.aria-describedby]="curpError() ? 'curp-error' : null">
             <svg icon class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
             </svg>
           </app-input>
 
-          <app-input label="Fecha de Nacimiento" type="date" [(ngModel)]="birthDate" name="birthDate"></app-input>
-          <app-input label="RFC (Opcional)" placeholder="13 caracteres alfanuméricos" [(ngModel)]="rfc" name="rfc" filterRegex="[^a-zA-Z0-9]" [uppercase]="true" [maxLength]="13"></app-input>
+          <app-input label="Fecha de Nacimiento" type="date" [(ngModel)]="birthDate" name="birthDate" [error]="birthDateError()" [attr.aria-invalid]="!!birthDateError()" [attr.aria-describedby]="birthDateError() ? 'birthDate-error' : null"></app-input>
+          <app-input label="RFC (Opcional)" placeholder="13 caracteres alfanumericos" [(ngModel)]="rfc" name="rfc" (ngModelChange)="sanitizeRfc($event)" filterRegex="[^a-zA-Z0-9]" [uppercase]="true" [maxLength]="13" [error]="rfcError()" [attr.aria-invalid]="!!rfcError()" [attr.aria-describedby]="rfcError() ? 'rfc-error' : null"></app-input>
         </div>
 
         <div class="space-y-4 pt-4 animate-fade-in">
-          <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Dirección (Opcional)</h3>
-          
-          <app-input label="Calle" placeholder="Ej. Av. Hidalgo" [(ngModel)]="street" name="street" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="200"></app-input>
+          <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Direccion (Opcional)</h3>
+
+          <app-input label="Calle" placeholder="Ej. Av. Hidalgo" [(ngModel)]="street" name="street" (ngModelChange)="sanitizeText('street', $event, 200)" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="200"></app-input>
           <div class="flex gap-4">
-            <div class="flex-1"><app-input label="Número" placeholder="Ej. 123" [(ngModel)]="streetNumber" name="streetNumber" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="50"></app-input></div>
-            <div class="flex-1"><app-input label="C.P." placeholder="Ej. 27000" [(ngModel)]="postalCode" name="postalCode" filterRegex="[^0-9]" [maxLength]="5"></app-input></div>
+            <div class="flex-1"><app-input label="Numero" placeholder="Ej. 123" [(ngModel)]="streetNumber" name="streetNumber" (ngModelChange)="sanitizeText('streetNumber', $event, 50)" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="50"></app-input></div>
+            <div class="flex-1"><app-input label="C.P." placeholder="Ej. 27000" [(ngModel)]="postalCode" name="postalCode" (ngModelChange)="sanitizePostalCode($event)" filterRegex="[^0-9]" [maxLength]="5" [error]="postalCodeError()" [attr.aria-invalid]="!!postalCodeError()" [attr.aria-describedby]="postalCodeError() ? 'postalCode-error' : null"></app-input></div>
           </div>
-          <app-input label="Colonia" placeholder="Ej. Centro" [(ngModel)]="colonia" name="colonia" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="200"></app-input>
+          <app-input label="Colonia" placeholder="Ej. Centro" [(ngModel)]="colonia" name="colonia" (ngModelChange)="sanitizeText('colonia', $event, 200)" filterRegex="[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,-]" [maxLength]="200"></app-input>
           <div class="flex gap-4">
-            <div class="flex-1"><app-input label="Ciudad" placeholder="Ej. Torreón" [(ngModel)]="city" name="city" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input></div>
-            <div class="flex-1"><app-input label="Estado" placeholder="Ej. Coahuila" [(ngModel)]="state" name="state" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input></div>
+            <div class="flex-1"><app-input label="Ciudad" placeholder="Ej. Torreon" [(ngModel)]="city" name="city" (ngModelChange)="sanitizeText('city', $event, 100)" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input></div>
+            <div class="flex-1"><app-input label="Estado" placeholder="Ej. Coahuila" [(ngModel)]="state" name="state" (ngModelChange)="sanitizeText('state', $event, 100)" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input></div>
           </div>
         </div>
       }
@@ -80,7 +80,7 @@
       @if (currentStep === 2) {
         <div class="space-y-4 animate-fade-in">
           <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Documentos (Opcional por ahora)</h3>
-          
+
           <div>
             <label class="block text-sm font-bold text-gray-900 mb-2">INE Frente</label>
             <input type="file" (change)="onFileSelected($event, 'frente')" accept="image/*" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none p-2">
@@ -96,25 +96,28 @@
       @if (currentStep === 3) {
         <div class="space-y-4 animate-fade-in">
           <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Solicitar Prevale</h3>
-          
+
           <div class="mb-4">
             <label class="block mb-2 text-sm font-bold text-gray-900 dark:text-white">Seleccionar Producto</label>
-            <select [(ngModel)]="productId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-brand focus:border-brand block w-full p-3 font-medium transition-colors" [disabled]="isLoadingProducts()">
+            <select [(ngModel)]="productId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-brand focus:border-brand block w-full p-3 font-medium transition-colors" [class.border-red-500]="productIdError()" [disabled]="isLoadingProducts()" [attr.aria-invalid]="!!productIdError()" [attr.aria-describedby]="productIdError() ? 'productId-error' : null">
               <option value="" disabled selected>Selecciona un producto financiero</option>
               @for (product of products(); track product.id) {
-                <option [value]="product.id">Código: {{ product.code }} - {{ (product.costCents / 100) | currency:'MXN' }} ({{ product.totalPeriods }} quin.)</option>
+                <option [value]="product.id">Codigo: {{ product.code }} - {{ (product.costCents / 100) | currency:'MXN' }} ({{ product.totalPeriods }} quin.)</option>
               }
             </select>
+            @if (productIdError()) {
+              <p id="productId-error" role="alert" class="mt-2 text-sm text-red-700 font-medium">{{ productIdError() }}</p>
+            }
           </div>
           <h4 class="text-md font-bold text-gray-800 border-b pb-2 mt-4 mb-4">Datos Bancarios</h4>
-          <app-input label="Banco" placeholder="Ej. BBVA" [(ngModel)]="banco" name="banco" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="100"></app-input>
-          <app-input label="CLABE Interbancaria" placeholder="18 digitos" [(ngModel)]="clabe" name="clabe" filterRegex="[^0-9]" [maxLength]="18"></app-input>
+          <app-input label="Banco" placeholder="Ej. BBVA" [(ngModel)]="banco" name="banco" (ngModelChange)="sanitizeBanco($event)" filterRegex="[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]" [maxLength]="80" [error]="bancoError()" [attr.aria-invalid]="!!bancoError()" [attr.aria-describedby]="bancoError() ? 'banco-error' : null"></app-input>
+          <app-input label="CLABE Interbancaria" placeholder="18 digitos" [(ngModel)]="clabe" name="clabe" (ngModelChange)="sanitizeClabe($event)" filterRegex="[^0-9]" [maxLength]="18" [error]="clabeError()" [attr.aria-invalid]="!!clabeError()" [attr.aria-describedby]="clabeError() ? 'clabe-error' : null"></app-input>
 
 
-          
-          
+
+
           <div class="mb-6">
-            
+
           </div>
         </div>
       }
@@ -123,15 +126,15 @@
       <div class="pt-6 border-t mt-6 flex gap-3">
         @if (currentStep > 1) {
           <div class="flex-1">
-            <app-button variant="outline" size="lg" [fullWidth]="true" [disabled]="isLoading()" (onClick)="prevStep()">Atrás</app-button>
+            <app-button variant="outline" size="lg" [fullWidth]="true" [disabled]="isLoading()" (onClick)="prevStep()">Atras</app-button>
           </div>
         }
-        
+
         <div class="flex-1">
           @if (currentStep < 3) {
             <app-button variant="primary" size="lg" [fullWidth]="true" (onClick)="nextStep()">Siguiente</app-button>
           } @else {
-            <app-button variant="primary" size="lg" [fullWidth]="true" [disabled]="isLoading() || !productId" (onClick)="finalizarRegistro()">
+            <app-button variant="primary" size="lg" [fullWidth]="true" [disabled]="isLoading() || !canFinalize()" (onClick)="finalizarRegistro()">
               @if(isLoading()) { Registrando... } @else { Finalizar y Crear }
             </app-button>
           }
