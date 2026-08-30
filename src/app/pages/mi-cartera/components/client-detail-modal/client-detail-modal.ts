@@ -1,9 +1,10 @@
-import { Component, input, output, inject, signal, effect } from '@angular/core';
+import { Component, input, output, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { ClientService } from '../../../../core/services/client.service';
 import { VoucherService } from '../../../../core/services/voucher.service';
 import { FormsModule } from '@angular/forms';
 import type { Client } from '../../../../core/types/client.types';
+import { validateReason } from '../../../../core/validators/form-validators';
 
 @Component({
   selector: 'app-client-detail-modal',
@@ -28,6 +29,14 @@ export class ClientDetailModal {
   cancelReason = signal('');
   isCanceling = signal(false);
   cancelError = signal('');
+  readonly submittedCancel = signal(false);
+
+  readonly cancelReasonError = computed(() => {
+    if (!this.submittedCancel()) return '';
+    return validateReason(this.cancelReason(), 10, 500, 'motivo de cancelacion');
+  });
+
+  readonly canConfirmCancel = computed(() => !this.cancelReasonError() && this.cancelReason().trim().length > 0);
 
   protected readonly Math = Math;
 
@@ -61,17 +70,20 @@ export class ClientDetailModal {
     this.cancelingFolio.set(folio);
     this.cancelReason.set('');
     this.cancelError.set('');
+    this.submittedCancel.set(false);
   }
 
   cancelCancellation() {
     this.cancelingFolio.set(null);
     this.cancelReason.set('');
     this.cancelError.set('');
+    this.submittedCancel.set(false);
   }
 
   confirmCancellation(folio: string) {
-    if (this.cancelReason().length < 3) {
-      this.cancelError.set('El motivo debe tener al menos 3 caracteres.');
+    this.submittedCancel.set(true);
+    if (!this.canConfirmCancel()) {
+      this.cancelError.set(this.cancelReasonError());
       return;
     }
 
