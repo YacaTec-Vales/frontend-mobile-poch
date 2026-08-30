@@ -16,7 +16,7 @@
                 <h2 class="text-xl font-bold mt-2 text-gray-900">Panel de control Distribuidora</h2>
             </div>
 
-            <!-- Error Message -->
+            <!-- Error Message (errores del backend / globales) -->
             @if (errorMessage()) {
                 <div class="flex items-center gap-3 p-4 text-sm text-red-800 rounded-xl bg-red-50 border border-red-200 animate-[fadeIn_0.3s_ease-out]"
                      role="alert" id="login-error-alert">
@@ -28,21 +28,45 @@
             }
 
             <!-- Form -->
-            <form class="space-y-6" (submit)="onSubmit($event)">
-                
+            <form class="space-y-6" (submit)="onSubmit($event)" novalidate>
+
                 <!-- PASO 1: LOGIN NORMAL -->
                 @if (step() === 'login') {
                 <div>
                     <label for="usernameOrEmail" class="block mb-2 text-sm font-extrabold text-gray-900">Usuario o Email</label>
                     <input type="text" name="usernameOrEmail" id="usernameOrEmail" [(ngModel)]="usernameOrEmail"
+                        autocomplete="username"
                         class="bg-gray-200 border-0 text-gray-900 text-lg rounded-xl focus:ring-4 focus:ring-brand-300 block w-full p-4 font-semibold transition-all"
-                        placeholder="usuario o correo@empresa.com" required [disabled]="isLoading()">
+                        [class.border-red-500]="usernameOrEmailError()"
+                        [class.ring-red-300]="usernameOrEmailError()"
+                        [class.focus:ring-red-300]="usernameOrEmailError()"
+                        [attr.aria-invalid]="!!usernameOrEmailError()"
+                        [attr.aria-describedby]="usernameOrEmailError() ? 'usernameOrEmail-error' : null"
+                        placeholder="usuario o correo@empresa.com"
+                        [disabled]="isLoading()">
+                    @if (usernameOrEmailError()) {
+                        <p id="usernameOrEmail-error" role="alert" class="mt-2 text-sm text-red-700 font-medium">
+                            {{ usernameOrEmailError() }}
+                        </p>
+                    }
                 </div>
                 <div>
                     <label for="password" class="block mb-2 text-sm font-extrabold text-gray-900">Contraseña</label>
                     <input type="password" name="password" id="password" [(ngModel)]="password"
+                        autocomplete="current-password"
                         class="bg-gray-200 border-0 text-gray-900 text-lg rounded-xl focus:ring-4 focus:ring-brand-300 block w-full p-4 font-semibold transition-all"
-                        placeholder="••••••••" required [disabled]="isLoading()">
+                        [class.border-red-500]="passwordError()"
+                        [class.ring-red-300]="passwordError()"
+                        [class.focus:ring-red-300]="passwordError()"
+                        [attr.aria-invalid]="!!passwordError()"
+                        [attr.aria-describedby]="passwordError() ? 'password-error' : null"
+                        placeholder="Minimo 8 caracteres"
+                        [disabled]="isLoading()">
+                    @if (passwordError()) {
+                        <p id="password-error" role="alert" class="mt-2 text-sm text-red-700 font-medium">
+                            {{ passwordError() }}
+                        </p>
+                    }
                 </div>
 
                 <div class="flex items-center">
@@ -63,23 +87,51 @@
                         <h3 class="text-xl font-bold text-gray-900">Cambio Obligatorio</h3>
                         <p class="text-sm text-gray-500 mt-2">Por tu seguridad, debes cambiar la contraseña predeterminada antes de continuar.</p>
                     </div>
-                    
+
                     <div class="space-y-4">
                         <div>
                             <label for="newPassword" class="block mb-2 text-sm font-extrabold text-gray-900">Nueva Contraseña</label>
                             <input type="password" name="newPassword" id="newPassword" [(ngModel)]="newPassword"
+                                autocomplete="new-password"
                                 class="bg-gray-200 border-0 text-gray-900 text-lg rounded-xl focus:ring-4 focus:ring-brand-300 block w-full p-4 font-semibold transition-all"
-                                placeholder="Mínimo 8 caracteres" required [disabled]="isLoading()">
+                                [class.border-red-500]="newPasswordError()"
+                                [class.ring-red-300]="newPasswordError()"
+                                [class.focus:ring-red-300]="newPasswordError()"
+                                [attr.aria-invalid]="!!newPasswordError()"
+                                [attr.aria-describedby]="newPasswordError() ? 'newPassword-error' : 'newPassword-hint'"
+                                placeholder="Minimo 8 caracteres"
+                                [disabled]="isLoading()">
+                            @if (newPasswordError()) {
+                                <p id="newPassword-error" role="alert" class="mt-2 text-sm text-red-700 font-medium">
+                                    {{ newPasswordError() }}
+                                </p>
+                            } @else {
+                                <p id="newPassword-hint" class="mt-2 text-xs text-gray-500">
+                                    La contraseña debe tener minimo 8 caracteres, al menos una mayuscula, una minuscula y un digito.
+                                </p>
+                            }
                         </div>
                         <div>
                             <label for="confirmPassword" class="block mb-2 text-sm font-extrabold text-gray-900">Confirmar Nueva Contraseña</label>
                             <input type="password" name="confirmPassword" id="confirmPassword" [(ngModel)]="confirmPassword"
+                                autocomplete="new-password"
                                 class="bg-gray-200 border-0 text-gray-900 text-lg rounded-xl focus:ring-4 focus:ring-brand-300 block w-full p-4 font-semibold transition-all"
-                                placeholder="Vuelve a escribirla" required [disabled]="isLoading()">
+                                [class.border-red-500]="confirmPasswordError()"
+                                [class.ring-red-300]="confirmPasswordError()"
+                                [class.focus:ring-red-300]="confirmPasswordError()"
+                                [attr.aria-invalid]="!!confirmPasswordError()"
+                                [attr.aria-describedby]="confirmPasswordError() ? 'confirmPassword-error' : null"
+                                placeholder="Vuelve a escribirla"
+                                [disabled]="isLoading()">
+                            @if (confirmPasswordError()) {
+                                <p id="confirmPassword-error" role="alert" class="mt-2 text-sm text-red-700 font-medium">
+                                    {{ confirmPasswordError() }}
+                                </p>
+                            }
                         </div>
                     </div>
-                    
-                    <button type="button" class="mt-4 text-sm font-semibold text-brand hover:underline" (click)="step.set('login')">
+
+                    <button type="button" class="mt-4 text-sm font-semibold text-brand hover:underline" (click)="step.set('login'); submitted.set(false)">
                         &larr; Cancelar y volver
                     </button>
                 </div>
@@ -98,7 +150,7 @@
 
                     <div class="flex justify-center mb-6">
                         @if (qrCodeUrl) {
-                            <img [src]="qrCodeUrl" alt="Código QR MFA" class="w-48 h-48 border rounded-xl shadow-sm">
+                            <img [src]="qrCodeUrl" alt="Codigo QR MFA" class="w-48 h-48 border rounded-xl shadow-sm">
                         } @else {
                             <div class="w-48 h-48 border rounded-xl bg-gray-100 flex items-center justify-center animate-pulse text-gray-400">
                                 Cargando QR...
@@ -106,12 +158,24 @@
                         }
                     </div>
 
-                    <label for="mfaCodeSetup" class="block mb-2 text-sm font-extrabold text-gray-900">Código de 6 dígitos</label>
-                    <input type="text" name="mfaCodeSetup" id="mfaCodeSetup" [(ngModel)]="mfaCode" autocomplete="one-time-code" maxlength="6"
+                    <label for="mfaCodeSetup" class="block mb-2 text-sm font-extrabold text-gray-900">Codigo de 6 digitos</label>
+                    <input type="text" name="mfaCodeSetup" id="mfaCodeSetup" [(ngModel)]="mfaCode"
+                        autocomplete="one-time-code" maxlength="6" inputmode="numeric"
                         class="bg-gray-200 border-0 text-center tracking-[0.5em] text-gray-900 text-2xl rounded-xl focus:ring-4 focus:ring-brand-300 block w-full p-4 font-bold transition-all"
-                        placeholder="000000" required [disabled]="isLoading()">
-                    
-                    <button type="button" class="mt-4 text-sm font-semibold text-brand hover:underline" (click)="step.set('login')">
+                        [class.border-red-500]="mfaCodeError()"
+                        [class.ring-red-300]="mfaCodeError()"
+                        [class.focus:ring-red-300]="mfaCodeError()"
+                        [attr.aria-invalid]="!!mfaCodeError()"
+                        [attr.aria-describedby]="mfaCodeError() ? 'mfaCodeSetup-error' : null"
+                        placeholder="000000"
+                        [disabled]="isLoading()">
+                    @if (mfaCodeError()) {
+                        <p id="mfaCodeSetup-error" role="alert" class="mt-2 text-sm text-red-700 font-medium text-center">
+                            {{ mfaCodeError() }}
+                        </p>
+                    }
+
+                    <button type="button" class="mt-4 text-sm font-semibold text-brand hover:underline" (click)="step.set('login'); submitted.set(false)">
                         &larr; Cancelar y volver
                     </button>
                 </div>
@@ -124,16 +188,28 @@
                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand/10 text-brand mb-4">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900">Autenticación Multifactor</h3>
-                        <p class="text-sm text-gray-500 mt-2">Ingresa el código de 6 dígitos de tu aplicación autenticadora.</p>
+                        <h3 class="text-xl font-bold text-gray-900">Autenticacion Multifactor</h3>
+                        <p class="text-sm text-gray-500 mt-2">Ingresa el codigo de 6 digitos de tu aplicacion autenticadora.</p>
                     </div>
-                    <label for="mfaCodeVerify" class="block mb-2 text-sm font-extrabold text-gray-900">Código TOTP</label>
-                    <input type="text" name="mfaCodeVerify" id="mfaCodeVerify" [(ngModel)]="mfaCode" autocomplete="one-time-code" maxlength="6"
+                    <label for="mfaCodeVerify" class="block mb-2 text-sm font-extrabold text-gray-900">Codigo TOTP</label>
+                    <input type="text" name="mfaCodeVerify" id="mfaCodeVerify" [(ngModel)]="mfaCode"
+                        autocomplete="one-time-code" maxlength="6" inputmode="numeric"
                         class="bg-gray-200 border-0 text-center tracking-[0.5em] text-gray-900 text-2xl rounded-xl focus:ring-4 focus:ring-brand-300 block w-full p-4 font-bold transition-all"
-                        placeholder="000000" required [disabled]="isLoading()">
-                    
-                    <button type="button" class="mt-4 text-sm font-semibold text-brand hover:underline" (click)="step.set('login')">
-                        &larr; Volver al inicio de sesión
+                        [class.border-red-500]="mfaCodeError()"
+                        [class.ring-red-300]="mfaCodeError()"
+                        [class.focus:ring-red-300]="mfaCodeError()"
+                        [attr.aria-invalid]="!!mfaCodeError()"
+                        [attr.aria-describedby]="mfaCodeError() ? 'mfaCodeVerify-error' : null"
+                        placeholder="000000"
+                        [disabled]="isLoading()">
+                    @if (mfaCodeError()) {
+                        <p id="mfaCodeVerify-error" role="alert" class="mt-2 text-sm text-red-700 font-medium text-center">
+                            {{ mfaCodeError() }}
+                        </p>
+                    }
+
+                    <button type="button" class="mt-4 text-sm font-semibold text-brand hover:underline" (click)="step.set('login'); submitted.set(false)">
+                        &larr; Volver al inicio de sesion
                     </button>
                 </div>
                 }
@@ -141,7 +217,7 @@
                 <button type="submit" id="login-submit-btn"
                     class="w-full text-white font-bold rounded-xl text-xl px-5 py-4 mt-4 text-center shadow-lg hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-3"
                     style="background-color: var(--color-brand);"
-                    [disabled]="isLoading()">
+                    [disabled]="isLoading() || !canSubmit()">
                     @if (isLoading()) {
                         <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -149,12 +225,12 @@
                         </svg>
                         @if (step() === 'change_password') { Guardando... }
                         @else if (step() === 'mfa_setup' || step() === 'mfa_verify') { Verificando... }
-                        @else { Iniciando sesión... }
+                        @else { Iniciando sesion... }
                     } @else {
-                        @if (step() === 'change_password') { Guardar Contraseña }
-                        @else if (step() === 'mfa_setup') { Finalizar Configuración }
-                        @else if (step() === 'mfa_verify') { Verificar Código }
-                        @else { Iniciar Sesión }
+                        @if (step() === 'change_password') { Guardar Contrasena }
+                        @else if (step() === 'mfa_setup') { Finalizar Configuracion }
+                        @else if (step() === 'mfa_verify') { Verificar Codigo }
+                        @else { Iniciar Sesion }
                     }
                 </button>
             </form>
