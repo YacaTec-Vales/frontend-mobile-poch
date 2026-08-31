@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +20,7 @@ declare var ApexCharts: any;
 })
 export class Dashboard implements OnInit {
   private readonly distribuidorService = inject(DistribuidorService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly status = signal<DistribuidorStatus | null>(null);
   readonly isLoading = signal(true);
@@ -27,10 +29,13 @@ export class Dashboard implements OnInit {
   private chart: any;
 
   ngOnInit() {
-    this.distribuidorService.getMyStatus().subscribe({
+    this.distribuidorService.getMyStatus()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
       next: (response) => {
         this.status.set(response.data);
         this.isLoading.set(false);
+        // Render chart in next macrotask para que el DOM se actualice primero.
         setTimeout(() => this.renderChart(response.data), 0);
       },
       error: (err) => {

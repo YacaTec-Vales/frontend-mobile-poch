@@ -1,9 +1,11 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardComponent } from '../../components/ui/card/card';
 import { ButtonComponent } from '../../components/ui/button/button';
 import { validateDescription, validateReason } from '../../core/validators/form-validators';
+import { timer } from 'rxjs';
 
 type TipoReclamo = 'CLIENTE' | 'APP' | 'CUENTA' | 'OTRO';
 
@@ -54,6 +56,8 @@ export class Reclamos implements OnInit {
   });
 
   readonly reclamosRecientes = signal<ReclamoLocal[]>([]);
+
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit() {
     this.loadReclamos();
@@ -130,24 +134,34 @@ export class Reclamos implements OnInit {
       fecha: new Date().toISOString(),
     };
 
-    setTimeout(() => {
-      const list = [nuevo, ...this.reclamosRecientes()].slice(0, 10);
-      this.reclamosRecientes.set(list);
-      this.saveReclamos(list);
+    // BUG FIX 2026-08-31: antes usabamos setTimeout directo. Si el usuario
+    // navega fuera del componente antes de los 600ms/6000ms, el callback
+    // se ejecutaba con el componente destruido y `this.successMessage.set('')`
+    // fallaba con `Cannot read properties of undefined (reading 'startTime')`.
+    // Usamos RxJS timer + takeUntilDestroyed (Angular 16+) para cancelar
+    // la suscripcion automaticamente cuando el componente se destruye.
+    timer(600)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        const list = [nuevo, ...this.reclamosRecientes()].slice(0, 10);
+        this.reclamosRecientes.set(list);
+        this.saveReclamos(list);
 
-      this.successMessage.set(
-        `Reclamo ${nuevo.id} registrado. Recibiras seguimiento por correo electronico.`,
-      );
-      this.isSubmitting.set(false);
+        this.successMessage.set(
+          `Reclamo ${nuevo.id} registrado. Recibiras seguimiento por correo electronico.`,
+        );
+        this.isSubmitting.set(false);
 
-      // Reset
-      this.tipo.set('CLIENTE');
-      this.descripcion.set('');
-      this.evidenciaNombre.set(null);
-      this.submitted.set(false);
+        // Reset
+        this.tipo.set('CLIENTE');
+        this.descripcion.set('');
+        this.evidenciaNombre.set(null);
+        this.submitted.set(false);
 
-      setTimeout(() => this.successMessage.set(''), 6000);
-    }, 600); // pequeño delay para simular POST y mostrar spinner.
+        timer(6000)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => this.successMessage.set(''));
+      });
   }
 
   /** Texto legible del tipo de reclamo para mostrar en la lista. */

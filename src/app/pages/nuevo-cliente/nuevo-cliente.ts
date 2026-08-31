@@ -1,9 +1,10 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, of, timer } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CardComponent } from '../../components/ui/card/card';
 import { InputComponent } from '../../components/ui/input/input';
@@ -42,6 +43,7 @@ export class NuevoCliente implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly voucherService = inject(VoucherService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   // Stepper State
   currentStep = 1;
@@ -295,7 +297,11 @@ export class NuevoCliente implements OnInit {
             next: () => {
               this.isLoading.set(false);
               this.successMessage.set('¡Alta y Prevale generados con exito!');
-              setTimeout(() => this.router.navigate(['/mi-cartera']), 2000);
+              // BUG FIX 2026-08-31: takeUntilDestroyed cancela el redirect si el
+              // componente se destruye antes de los 2s.
+              timer(2000)
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => this.router.navigate(['/mi-cartera']));
             },
             error: (err: HttpErrorResponse) => {
               this.isLoading.set(false);
