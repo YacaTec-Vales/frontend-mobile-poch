@@ -44,6 +44,29 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         error.status !== 401 ||
         SKIP_REFRESH_PATHS.some((path) => req.url.includes(path))
       ) {
+        // FASE A: traducir AUTH.ORIGIN_NOT_ALLOWED (403) a mensaje claro.
+        if (error.status === 403) {
+          const originalCode =
+            error.error?.code ?? error.error?.error?.code ?? null;
+          if (originalCode === 'AUTH.ORIGIN_NOT_ALLOWED') {
+            const details =
+              error.error?.details ?? error.error?.error?.details;
+            const allowed =
+              details?.allowedOrigins?.join(' o ') ?? 'red privada';
+            const translated = new HttpErrorResponse({
+              error: {
+                message: `Esta cuenta solo puede iniciar sesion desde ${allowed}. Si necesitas entrar como administrador, abre vpn.taquizaschavez.com.mx.`,
+                code: originalCode,
+                data: details,
+              },
+              headers: error.headers,
+              status: error.status,
+              statusText: error.statusText,
+              url: error.url || undefined,
+            });
+            return throwError(() => translated);
+          }
+        }
         return throwError(() => error);
       }
 
